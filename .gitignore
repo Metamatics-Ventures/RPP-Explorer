@@ -1,0 +1,30 @@
+# Data (downloaded via ETL, ~840 MB, daily-refreshed — not committed)
+/data/
+*.sqlite
+*.sqlite-*
+*.db
+RPP/
+*.json.gz
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+*.local
+.env
+.env.*
+
+# Python / ETL
+__pycache__/
+*.pyc
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
