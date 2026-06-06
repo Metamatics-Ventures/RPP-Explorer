@@ -612,28 +612,63 @@ async function analytika(){
 }
 
 /* ---------- SROVNÁNÍ ---------- */
+const CMP_COLORS = [
+  'linear-gradient(90deg,#00d8ff,#7c5cff)',
+  'linear-gradient(90deg,#ff2d8d,#ff7eb3)',
+  'linear-gradient(90deg,#3ad900,#86ff00)',
+  'linear-gradient(90deg,#ff9f1c,#ffd166)',
+  'linear-gradient(90deg,#7c5cff,#b39dff)',
+  'linear-gradient(90deg,#06d6a0,#83f5d6)',
+  'linear-gradient(90deg,#ef476f,#ff8fa3)',
+  'linear-gradient(90deg,#118ab2,#5fc7e8)',
+];
+function cmpBar(label, val, max, color){
+  const pct = max ? Math.round(val/max*100) : 0;
+  return `<div class="cmpbar"><div class="lbl" title="${esc(label)}">${esc(label)}</div><div class="track"><div class="fill" style="width:${pct}%;background:${color}"></div></div><div class="val">${fmt(val)}</div></div>`;
+}
 async function srovnani(){
   await ensureNames(); const rows = await load('agendy');
-  const opts = rows.map(a=>`<option value="${esc(a.id)}">${esc(a.nazev)}</option>`).join('');
-  view.innerHTML = `<div class="pagehdr"><div><h1>Srovnání agend</h1><div class="sub">Vyber dvě agendy a porovnej metriky</div></div></div>
-    <div class="card"><div class="toolbar">
-      <select id="cmpA" class="grow">${opts}</select><span class="muted">vs.</span><select id="cmpB" class="grow">${opts}</select>
-    </div><div id="cmpout"></div></div>`;
-  byId('cmpB').selectedIndex = 1;
-  function draw(){
-    const a=rows.find(x=>x.id===byId('cmpA').value), b=rows.find(x=>x.id===byId('cmpB').value);
-    if(!a||!b) return;
-    const metric=(lbl,ka,kb)=>{ const mx=Math.max(ka,kb,1); return `<div style="margin:10px 0"><div class="small muted">${lbl}</div>
-      ${bar(a.nazev.slice(0,22),ka,mx)}${bar(b.nazev.slice(0,22),kb,mx,'pink')}</div>`; };
-    byId('cmpout').innerHTML = `<div style="margin-top:14px">
-      ${metric('Činnosti',a.c.cinnosti,b.c.cinnosti)}
-      ${metric('Informační systémy',a.c.isvs,b.c.isvs)}
-      ${metric('Služby',a.c.sluzby,b.c.sluzby)}
-      ${metric('Vykonávající orgány',a.c.ovm,b.c.ovm)}
-      ${metric('Oprávnění (čte/dává)',a.c.opr_out+a.c.opr_in,b.c.opr_out+b.c.opr_in)}
+  const MAX = 8;
+  let sel = rows.slice(0, Math.min(3, rows.length)).map(a=>a.id);
+  const METRICS = [
+    ['Počet agendových činností', a=>a.c.cinnosti],
+    ['Informační systémy (ISVS)', a=>a.c.isvs],
+    ['Poskytované služby veřejné správy', a=>a.c.sluzby],
+    ['Vykonávající orgány (OVM)', a=>a.c.ovm],
+    ['Oprávnění k údajům (čtení + zápis)', a=>a.c.opr_out+a.c.opr_in],
+  ];
+  view.innerHTML = `<div class="pagehdr"><div><h1>Srovnání agend</h1><div class="sub">Vyber až ${MAX} agend a porovnej jejich metriky</div></div></div>
+    <div class="card">
+      <div id="cmpsel" class="cmpsel"></div>
+      <button id="cmpadd" class="btn" style="margin-top:12px">+ Přidat agendu</button>
+      <div id="cmpout"></div>
     </div>`;
+  function renderSelectors(){
+    const host = byId('cmpsel');
+    host.innerHTML = sel.map((id,i)=>`
+      <div class="cmprow">
+        <span class="cmpdot" style="background:${CMP_COLORS[i%CMP_COLORS.length]}"></span>
+        <select class="grow cmpselbox" data-i="${i}">${rows.map(a=>`<option value="${esc(a.id)}" ${a.id===id?'selected':''}>${esc(a.nazev)}</option>`).join('')}</select>
+        ${sel.length>2?`<button class="btnx" data-i="${i}" title="Odebrat">×</button>`:''}
+      </div>`).join('');
+    host.querySelectorAll('.cmpselbox').forEach(s=>s.addEventListener('change',e=>{ sel[+e.target.dataset.i]=e.target.value; draw(); }));
+    host.querySelectorAll('.btnx').forEach(b=>b.addEventListener('click',e=>{ sel.splice(+e.currentTarget.dataset.i,1); renderSelectors(); draw(); }));
+    byId('cmpadd').style.display = sel.length>=MAX ? 'none' : '';
   }
-  byId('cmpA').addEventListener('change',draw); byId('cmpB').addEventListener('change',draw); draw();
+  function draw(){
+    const ags = sel.map(id=>rows.find(x=>x.id===id)).filter(Boolean);
+    if(!ags.length){ byId('cmpout').innerHTML=''; return; }
+    byId('cmpout').innerHTML = `<div class="cmpgrid">` + METRICS.map(([lbl,fn])=>{
+      const mx = Math.max(...ags.map(fn), 1);
+      return `<div class="cmpmetric"><div class="cmptitle">${lbl}</div>${ags.map((a,i)=>cmpBar(a.nazev,fn(a),mx,CMP_COLORS[i%CMP_COLORS.length])).join('')}</div>`;
+    }).join('') + `</div>`;
+  }
+  byId('cmpadd').addEventListener('click',()=>{
+    if(sel.length>=MAX) return;
+    const used=new Set(sel); const next=rows.find(a=>!used.has(a.id))||rows[0];
+    if(next){ sel.push(next.id); renderSelectors(); draw(); }
+  });
+  renderSelectors(); draw();
 }
 
 /* ---------- HLEDÁNÍ ---------- */
@@ -726,6 +761,7 @@ async function render(){
   const fn = ROUTES[route] || dashboard;
   view.innerHTML = '<div class="loading"><span class="spin"></span>Načítám…</div>';
   setActive(route);
+  if (window.gtag) gtag('event','page_view',{page_title:route, page_path:location.hash||'#/dashboard', page_location:location.href});
   try { await fn(arg); }
   catch(e){ console.error(e); view.innerHTML = '<div class="empty">Chyba při načítání: '+esc(e.message)+'</div>'; }
   document.querySelector('.content').scrollTo(0,0);
