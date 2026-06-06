@@ -434,7 +434,7 @@ async function graf(arg){
   view.innerHTML=`<div class="pagehdr"><div><h1>Graf vazeb</h1><div class="sub">Klikni na uzel a graf se rozbalí o jeho sousedy · průzkum vazeb celého registru</div></div>
      <div style="display:flex;gap:8px"><input id="gsearch" class="btn" style="min-width:260px" placeholder="Hledat agendu…">
        <button class="btn" id="greset">↺ Reset</button></div></div>
-     <div id="gselbar" class="card" style="padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><span class="muted small">Klikni na uzel pro rozbalení, nebo otevři jeho detail →</span><span id="gseldetail"></span></div>
+     <div id="gselbar" class="card" style="padding:10px 14px;margin-bottom:12px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap"><span class="muted small" id="ghint"></span><span id="gseldetail"></span></div>
      <div id="cy"></div>
      <div class="legend"><span><i style="background:#0a1f44"></i>agenda</span><span><i style="background:#00d8ff"></i>ISVS</span><span><i style="background:#7c5cff"></i>orgán</span><span><i style="background:#ff2d8d"></i>služba</span><span class="small">· velikost dle propojení · šipka = směr toku</span></div>`;
   byId('cy').style.background='radial-gradient(circle at 50% 42%, #112c57, #060f24)';
@@ -450,30 +450,44 @@ async function graf(arg){
       {selector:'edge[t="flow"]',style:{'line-color':'#86ff00','target-arrow-color':'#86ff00','line-style':'dashed'}},
     ],
     layout:{name:'preset'} });
+  window.__cy=cy;
   const have=new Set(), expanded=new Set();
   function node(id,t){ if(have.has(id))return; have.add(id); cy.add({data:{id,label:(nameOf(id)||id).slice(0,46),t:t||typeOf(id)}}); }
   function edge(s,t,kind){ const id=s+'~'+t; if(cy.getElementById(id).nonempty())return; if(!have.has(s)||!have.has(t))return; cy.add({data:{id,source:s,target:t,t:kind}}); }
   async function expand(id){
     if(expanded.has(id))return; expanded.add(id);
     if(id.startsWith('agenda/')){ const a=agMap[id]; if(!a)return;
-      a.isvs.slice(0,10).forEach(x=>{node(x,'isvs');edge(id,x,'isvs');});
-      sluzby.filter(s=>s.agenda===id).slice(0,8).forEach(s=>{node(s.id,'sluzba');edge(id,s.id,'sluzba');});
-      (a.ovm_sample||[]).slice(0,10).forEach(x=>{node(x,'ovm');edge(id,x,'ovm');});
-      opr.filter(o=>o.z===id).slice(0,8).forEach(o=>{node(o.do,'agenda');edge(id,o.do,'flow');});
-      opr.filter(o=>o.do===id).slice(0,8).forEach(o=>{node(o.z,'agenda');edge(o.z,id,'flow');});
+      a.isvs.slice(0,6).forEach(x=>{node(x,'isvs');edge(id,x,'isvs');});
+      sluzby.filter(s=>s.agenda===id).slice(0,6).forEach(s=>{node(s.id,'sluzba');edge(id,s.id,'sluzba');});
+      (a.ovm_sample||[]).slice(0,6).forEach(x=>{node(x,'ovm');edge(id,x,'ovm');});
+      opr.filter(o=>o.z===id).slice(0,6).forEach(o=>{node(o.do,'agenda');edge(id,o.do,'flow');});
+      opr.filter(o=>o.do===id).slice(0,6).forEach(o=>{node(o.z,'agenda');edge(o.z,id,'flow');});
     } else if(id.startsWith('isvs/')){ const i=isvsMap[id]; if(!i)return;
-      (i.agendy||[]).slice(0,12).forEach(x=>{node(x,'agenda');edge(x,id,'isvs');});
+      (i.agendy||[]).slice(0,8).forEach(x=>{node(x,'agenda');edge(x,id,'isvs');});
     } else if(id.startsWith('orgán')){ if(!ovmMap){ovmMap=Object.fromEntries((await load('ovm')).map(o=>[o.id,o]));}
-      const o=ovmMap[id]; if(!o)return; (o.agendy_sample||[]).slice(0,12).forEach(x=>{node(x,'agenda');edge(x,id,'ovm');});
+      const o=ovmMap[id]; if(!o)return; (o.agendy_sample||[]).slice(0,8).forEach(x=>{node(x,'agenda');edge(x,id,'ovm');});
     } else if(id.startsWith('služba/')){ const s=sluzby.find(s=>s.id===id);
       if(s&&s.agenda){node(s.agenda,'agenda');edge(s.agenda,s.id,'sluzba');} }
   }
-  function relayout(){ cy.layout({name:'cose',animate:true,animationDuration:500,idealEdgeLength:95,nodeRepulsion:9000,edgeElasticity:120,gravity:0.3,padding:36,randomize:false}).run(); }
-  function updateSel(id){ cy.nodes().removeClass('sel'); cy.getElementById(id).addClass('sel');
-    byId('gseldetail').innerHTML=`<b>${esc(nameOf(id))}</b> &nbsp;<a class="link" href="#/${routeOf(id)}/${encodeURIComponent(id)}">otevřít detail →</a>`; }
+  function relayout(){ cy.layout({name:'cose',animate:true,animationDuration:450,idealEdgeLength:105,nodeRepulsion:12000,edgeElasticity:110,gravity:0.25,padding:40,randomize:false}).run(); }
+  // keep only nodes reachable from the current hub (drops the disconnected side after a cut)
+  function pruneToHub(){ const hub=cy.nodes('.hub'); if(hub.empty())return;
+    const keep=new Set([hub[0].id()]); const q=[hub[0]];
+    while(q.length){ const nn=q.pop(); nn.neighborhood('node').forEach(m=>{ if(!keep.has(m.id())){keep.add(m.id());q.push(m);} }); }
+    cy.nodes().forEach(nn=>{ if(!keep.has(nn.id())){ have.delete(nn.id()); expanded.delete(nn.id()); nn.remove(); } }); }
+  function removeBranch(id){ const n=cy.getElementById(id); if(n.empty()||n.hasClass('hub'))return;
+    have.delete(id); expanded.delete(id); n.remove(); pruneToHub(); relayout(); byId('gseldetail').innerHTML=''; }
+  function updateSel(id){ cy.nodes().removeClass('sel'); const n=cy.getElementById(id); n.addClass('sel');
+    byId('gseldetail').innerHTML=`<b>${esc(nameOf(id))}</b> &nbsp;<a class="link" href="#/${routeOf(id)}/${encodeURIComponent(id)}">detail →</a>`
+      + (n.hasClass('hub')?'':` &nbsp;<button class="btn" id="grm" style="padding:4px 10px">✕ odebrat větev</button>`);
+    const rm=byId('grm'); if(rm) rm.addEventListener('click',()=>removeBranch(id)); }
+  function focus(id){ cy.nodes().removeClass('hub'); cy.getElementById(id).addClass('hub'); cy.animate({center:{eles:cy.getElementById(id)}},{duration:380}); }
   async function reset(centerId){ cy.elements().remove(); have.clear(); expanded.clear();
-    node(centerId); await expand(centerId); cy.getElementById(centerId).addClass('hub'); relayout(); updateSel(centerId); }
-  cy.on('tap','node', async e=>{ const id=e.target.id(); await expand(id); cy.nodes().removeClass('hub'); e.target.addClass('hub'); relayout(); updateSel(id); });
+    node(centerId); await expand(centerId); cy.getElementById(centerId).addClass('hub'); relayout(); updateSel(centerId);
+    byId('ghint').innerHTML='Klik na uzel = <b>přesun fokusu + rozbalení</b> · klik na hranu = <b>přeříznout</b> (odpadne odpojená strana) · pravý klik na uzel = <b>odebrat větev</b>'; }
+  cy.on('tap','node', async e=>{ const id=e.target.id(); await expand(id); focus(id); relayout(); updateSel(id); });
+  cy.on('tap','edge', e=>{ e.target.remove(); pruneToHub(); relayout(); });
+  cy.on('cxttap','node', e=>{ removeBranch(e.target.id()); });
   byId('greset').addEventListener('click',()=>reset(start));
   let t; byId('gsearch').addEventListener('input', e=>{ clearTimeout(t); t=setTimeout(()=>{ const q=e.target.value.toLowerCase(); if(q.length<3)return; const hit=agendyRows.find(a=>a.nazev.toLowerCase().includes(q)); if(hit) reset(hit.id); },300); });
   await reset(start);
