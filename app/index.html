@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP Explorer — průzkumník Registru práv a povinností</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><div class="logo">⬢</div><div>RPP&nbsp;Explorer<small>znalostní vrstva státu</small></div></div>
+    <div class="navsec">Přehled</div>
+    <nav class="nav" id="nav-prehled">
+      <a data-route="dashboard" href="#/dashboard"><span class="i">▦</span> Dashboard</a>
+      <a data-route="hledat" href="#/hledat"><span class="i">🔍</span> Hledání</a>
+    </nav>
+    <div class="navsec">Entity</div>
+    <nav class="nav">
+      <a data-route="agendy" href="#/agendy"><span class="i">📋</span> Agendy</a>
+      <a data-route="ovm" href="#/ovm"><span class="i">🏛️</span> Orgány (OVM)</a>
+      <a data-route="isvs" href="#/isvs"><span class="i">💻</span> Systémy (ISVS)</a>
+      <a data-route="sluzby" href="#/sluzby"><span class="i">🧩</span> Služby</a>
+      <a data-route="udaje" href="#/udaje"><span class="i">🗂️</span> Údaje</a>
+      <a data-route="opravneni" href="#/opravneni"><span class="i">🔑</span> Oprávnění / Toky</a>
+    </nav>
+    <div class="navsec">Analýza</div>
+    <nav class="nav">
+      <a data-route="graf" href="#/graf"><span class="i">🕸️</span> Graf vazeb</a>
+      <a data-route="dopady" href="#/dopady"><span class="i">⚠️</span> Dopady &amp; kaskády</a>
+      <a data-route="analytika" href="#/analytika"><span class="i">📊</span> Analytika</a>
+      <a data-route="srovnani" href="#/srovnani"><span class="i">⚖️</span> Srovnání</a>
+    </nav>
+    <nav class="nav" style="margin-top:8px">
+      <a data-route="about" href="#/about"><span class="i">ℹ️</span> O projektu</a>
+    </nav>
+    <div class="foot">PS07 kGovernment · AFCEA ČR<br>vyvíjí Metamatics Ventures<br>
+      <a href="https://github.com/Metamatics-Ventures/RPP-Explorer" target="_blank" rel="noopener">⌥ GitHub →</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="search"><span class="ic">🔍</span>
+        <input id="globalsearch" placeholder="Hledat napříč agendami, systémy, službami, údaji…" autocomplete="off">
+      </div>
+      <a class="btn" id="exportbtn">↗ Export</a>
+      <a class="btn neon" href="#/dopady">⚠ Simulace výpadku</a>
+    </header>
+    <main class="content" id="view"><div class="loading"><span class="spin"></span>Načítám…</div></main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
