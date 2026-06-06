@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP Explorer — Dopady &amp; kaskády</title>
+<style>
+  :root{--bg:#0f172a;--soft:#f8fafc;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#4f46e5;--accent2:#6366f1;--ok:#16a34a;--warn:#d97706;--bad:#dc2626}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;background:var(--soft);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+  .side{width:240px;background:var(--bg);color:#cbd5e1;flex-shrink:0;display:flex;flex-direction:column;padding:18px 0}
+  .brand{display:flex;align-items:center;gap:10px;padding:0 20px 18px;font-weight:700;color:#fff;font-size:16px;border-bottom:1px solid #1e293b;margin-bottom:10px}
+  .brand .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#a855f7);display:flex;align-items:center;justify-content:center}
+  .navsec{padding:10px 14px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#475569}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#cbd5e1;text-decoration:none;font-size:13.5px;border-left:3px solid transparent}
+  .nav a:hover{background:#1e293b;color:#fff}
+  .nav a.active{background:#1e293b;color:#fff;border-left-color:var(--accent2);font-weight:600}
+  .nav a .i{width:18px;text-align:center}
+  .side .foot{margin-top:auto;padding:14px 20px;font-size:11px;color:#475569;border-top:1px solid #1e293b}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px}
+  .search{flex:1;max-width:520px;position:relative}
+  .search input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;background:var(--soft)}
+  .search .ic{position:absolute;left:11px;top:9px;color:var(--muted)}
+  .btn{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:13px;cursor:pointer;color:var(--ink)}
+  .btn.primary{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .content{padding:20px 24px;overflow:auto}
+  .pagehdr h1{font-size:22px;font-weight:700}
+  .pagehdr .sub{color:var(--muted);font-size:13px;margin-top:3px;max-width:760px}
+  .pagehdr{margin-bottom:16px}
+  /* control bar */
+  .control{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .control .grp{display:flex;flex-direction:column;gap:4px}
+  .control label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .control select,.control .selbox{padding:8px 12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;background:var(--soft);min-width:280px}
+  .selbox b{color:var(--accent)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:8px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
+  .seg button.on{background:var(--accent);color:#fff}
+  /* layout */
+  .cols{display:grid;grid-template-columns:1fr 360px;gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+  .card h2{font-size:14px;font-weight:700;margin-bottom:12px}
+  /* summary banner */
+  .ban{background:linear-gradient(90deg,#7f1d1d,#b91c1c);color:#fff;border-radius:14px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;gap:26px}
+  .ban .big{font-size:30px;font-weight:800;line-height:1}
+  .ban .lab{font-size:12px;opacity:.9;margin-top:3px}
+  .ban .sep{width:1px;height:42px;background:rgba(255,255,255,.3)}
+  /* cascade diagram */
+  .diagram{position:relative;height:430px;background:radial-gradient(circle at center,#fff,#f1f5f9);border-radius:12px;border:1px solid var(--line);overflow:hidden}
+  svg{width:100%;height:100%}
+  .ringlbl{font-size:10px;fill:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .node{cursor:pointer}
+  .node text{font-size:10.5px;fill:#0f172a;font-weight:600}
+  .node .sub{fill:#64748b;font-weight:400;font-size:9px}
+  .legend{display:flex;gap:16px;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  /* impact table */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:7px 8px;border-bottom:1px solid var(--line)}
+  td{padding:8px;border-bottom:1px solid var(--line)}
+  tr:last-child td{border:0}
+  tr:hover td{background:var(--soft)}
+  a.link{color:var(--accent);text-decoration:none;font-weight:600}
+  .ord{display:inline-block;width:20px;height:20px;border-radius:50%;color:#fff;text-align:center;line-height:20px;font-size:11px;font-weight:700}
+  .o1{background:var(--bad)} .o2{background:#f97316} .o3{background:#f59e0b}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:6px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+  .gap{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px;font-size:12.5px;color:#92400e;margin-bottom:18px}
+  .gap b{color:#78350f}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .kv:last-child{border:0}
+  .kv b{font-variant-numeric:tabular-nums}
+  .small{font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><div class="logo">⬢</div> RPP&nbsp;Explorer</div>
+    <div class="navsec">Přehled</div>
+    <nav class="nav"><a href="dashboard.html"><span class="i">▦</span> Dashboard</a></nav>
+    <div class="navsec">Entity</div>
+    <nav class="nav">
+      <a href="agenda-detail.html"><span class="i">📋</span> Agendy</a>
+      <a href="#"><span class="i">🏛️</span> Orgány (OVM)</a>
+      <a href="#"><span class="i">💻</span> Systémy (ISVS)</a>
+      <a href="#"><span class="i">🧩</span> Služby</a>
+      <a href="#"><span class="i">🗂️</span> Údaje</a>
+      <a href="#"><span class="i">🔑</span> Oprávnění / Toky</a>
+    </nav>
+    <div class="navsec">Analýza</div>
+    <nav class="nav">
+      <a href="#"><span class="i">🕸️</span> Graf vazeb</a>
+      <a class="active" href="dopady-kaskady.html"><span class="i">⚠️</span> Dopady &amp; kaskády</a>
+      <a href="#"><span class="i">📊</span> Analytika</a>
+      <a href="#"><span class="i">⚖️</span> Srovnání</a>
+    </nav>
+    <div class="foot">PS07 kGovernment · AFCEA ČR<br>Zdroj: RPP open data (DIA)</div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="search"><span class="ic">🔍</span><input placeholder="Hledat systém / službu / agendu pro simulaci výpadku…"></div>
+      <button class="btn">↗ Export scénáře</button>
+    </header>
+
+    <div class="content">
+      <div class="pagehdr">
+        <h1>Dopady &amp; kaskády <span style="font-size:13px;font-weight:600;color:var(--bad);background:#fef2f2;padding:3px 9px;border-radius:20px;vertical-align:middle">domeček z karet</span></h1>
+        <div class="sub">Simulace výpadku systému/služby/agendy a propagace dopadu přes graf vazeb RPP. Podklad pro policy paper <i>„Rizika a kaskádové dopady výpadku agendy/služby“</i> (17. schůzka, §7).</div>
+      </div>
+
+      <!-- control -->
+      <div class="control">
+        <div class="grp">
+          <label>Výchozí uzel (co vypadne)</label>
+          <div class="selbox">💻 <b>Základní registry (ROB/ROS/RUIAN)</b> · isvs/2001 ▾</div>
+        </div>
+        <div class="grp">
+          <label>Hloubka propagace</label>
+          <div class="seg"><button>1. řád</button><button>2. řád</button><button class="on">3. řád</button><button>vše</button></div>
+        </div>
+        <div class="grp">
+          <label>Typ vazby</label>
+          <div class="seg"><button class="on">vše</button><button>systém→agenda</button><button>toky údajů</button></div>
+        </div>
+        <button class="btn primary" style="align-self:flex-end">▶ Spustit simulaci</button>
+      </div>
+
+      <!-- summary banner -->
+      <div class="ban">
+        <div><div class="big">211</div><div class="lab">zasažených agend</div></div>
+        <div class="sep"></div>
+        <div><div class="big">1 480</div><div class="lab">zasažených služeb</div></div>
+        <div class="sep"></div>
+        <div><div class="big">4 902</div><div class="lab">dotčených orgánů</div></div>
+        <div class="sep"></div>
+        <div><div class="big">3</div><div class="lab">řády kaskády</div></div>
+        <div class="sep"></div>
+        <div><div class="big">≈ 6,1 M</div><div class="lab">dotčených občanů / rok*</div></div>
+      </div>
+
+      <div class="cols">
+        <!-- diagram -->
+        <div>
+          <div class="card">
+            <h2>Kaskáda výpadku — vizualizace dominо</h2>
+            <div class="diagram">
+              <svg viewBox="0 0 760 430" preserveAspectRatio="xMidYMid meet">
+                <!-- ring labels -->
+                <text class="ringlbl" x="375" y="20" text-anchor="middle">epicentrum</text>
+                <text class="ringlbl" x="375" y="408" text-anchor="middle">1. řád · přímo navázané   |   2. řád   |   3. řád</text>
+                <!-- edges -->
+                <g stroke="#cbd5e1" stroke-width="1.4">
+                  <line x1="375" y1="215" x2="180" y2="120"/>
+                  <line x1="375" y1="215" x2="180" y2="300"/>
+                  <line x1="375" y1="215" x2="560" y2="120"/>
+                  <line x1="375" y1="215" x2="560" y2="300"/>
+                  <line x1="180" y1="120" x2="70" y2="70"/>
+                  <line x1="180" y1="120" x2="70" y2="170"/>
+                  <line x1="560" y1="300" x2="690" y2="260"/>
+                  <line x1="560" y1="300" x2="690" y2="350"/>
+                  <line x1="560" y1="120" x2="690" y2="100"/>
+                  <line x1="180" y1="300" x2="70" y2="340"/>
+                </g>
+                <!-- epicenter -->
+                <g class="node">
+                  <circle cx="375" cy="215" r="46" fill="#7f1d1d"/>
+                  <circle cx="375" cy="215" r="46" fill="none" stroke="#dc2626" stroke-width="3"/>
+                  <text x="375" y="210" text-anchor="middle" fill="#fff" font-size="11">Základní</text>
+                  <text x="375" y="223" text-anchor="middle" fill="#fff" font-size="11">registry</text>
+                  <text x="375" y="237" text-anchor="middle" fill="#fecaca" font-size="9">VÝPADEK</text>
+                </g>
+                <!-- order 1 (red) -->
+                <g class="node"><circle cx="180" cy="120" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/><text x="180" y="116" text-anchor="middle">Portál</text><text x="180" y="129" text-anchor="middle">obč.</text><text class="sub" x="180" y="142" text-anchor="middle">1. řád</text></g>
+                <g class="node"><circle cx="180" cy="300" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/><text x="180" y="298" text-anchor="middle">Datové</text><text x="180" y="311" text-anchor="middle">schránky</text></g>
+                <g class="node"><circle cx="560" cy="120" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/><text x="560" y="116" text-anchor="middle">Czech</text><text x="560" y="129" text-anchor="middle">POINT</text></g>
+                <g class="node"><circle cx="560" cy="300" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/><text x="560" y="298" text-anchor="middle">Sociální</text><text x="560" y="311" text-anchor="middle">dávky</text></g>
+                <!-- order 2 (orange) -->
+                <g class="node"><circle cx="70" cy="70" r="26" fill="#ffedd5" stroke="#f97316" stroke-width="2"/><text x="70" y="68" text-anchor="middle" font-size="9">Matrika</text><text class="sub" x="70" y="80" text-anchor="middle">2.ř</text></g>
+                <g class="node"><circle cx="70" cy="170" r="26" fill="#ffedd5" stroke="#f97316" stroke-width="2"/><text x="70" y="168" text-anchor="middle" font-size="9">Volby</text></g>
+                <g class="node"><circle cx="70" cy="340" r="26" fill="#ffedd5" stroke="#f97316" stroke-width="2"/><text x="70" y="338" text-anchor="middle" font-size="9">Živnosti</text></g>
+                <g class="node"><circle cx="690" cy="100" r="26" fill="#ffedd5" stroke="#f97316" stroke-width="2"/><text x="690" y="98" text-anchor="middle" font-size="9">Katastr</text></g>
+                <!-- order 3 (amber) -->
+                <g class="node"><circle cx="690" cy="260" r="22" fill="#fef9c3" stroke="#eab308" stroke-width="2"/><text x="690" y="262" text-anchor="middle" font-size="9">Daně</text></g>
+                <g class="node"><circle cx="690" cy="350" r="22" fill="#fef9c3" stroke="#eab308" stroke-width="2"/><text x="690" y="346" text-anchor="middle" font-size="9">Krizové</text><text x="690" y="357" text-anchor="middle" font-size="9">řízení</text></g>
+              </svg>
+            </div>
+            <div class="legend">
+              <span><i style="background:#7f1d1d"></i>Epicentrum (výpadek)</span>
+              <span><i style="background:#dc2626"></i>1. řád — přímo navázané</span>
+              <span><i style="background:#f97316"></i>2. řád</span>
+              <span><i style="background:#eab308"></i>3. řád</span>
+              <span class="small">· velikost uzlu = počet dotčených občanů · klik = detail</span>
+            </div>
+          </div>
+
+          <!-- gap callout -->
+          <div class="gap">
+            ⚠ <b>Mezera ve standardu (gap):</b> RPP nezachycuje <b>cloudové závislosti</b> systémů — finální architektury IS posílané na OHA je neobsahují. 38 systémů v této kaskádě má <b>neznámou cloudovou závislost</b>; reálný dosah výpadku může být <b>větší</b>. Tento problém je nutné pojmenovat (viz §7 zápisu 17. schůzky).
+          </div>
+
+          <!-- impact table -->
+          <div class="card">
+            <h2>Tabulka dopadů <span class="small">(řazeno dle řádu a počtu dotčených)</span></h2>
+            <table>
+              <thead><tr><th>Řád</th><th>Zasažená entita</th><th>Typ</th><th>Vazba</th><th>Dotčené agendy</th><th>Stav dat</th></tr></thead>
+              <tbody>
+                <tr><td><span class="ord o1">1</span></td><td><a class="link" href="#">Portál občana</a></td><td><span class="tag">ISVS</span></td><td>čte referenční údaje</td><td>96</td><td><span class="tag">úplné</span></td></tr>
+                <tr><td><span class="ord o1">1</span></td><td><a class="link" href="#">IS datových schránek</a></td><td><span class="tag">ISVS</span></td><td>ověřuje identitu</td><td>88</td><td><span class="tag">úplné</span></td></tr>
+                <tr><td><span class="ord o1">1</span></td><td><a class="link" href="#">Agenda sociálních dávek</a></td><td><span class="tag">agenda</span></td><td>ztotožnění osob</td><td>1</td><td><span class="tag" style="background:#fffbeb;color:#92400e">cloud?</span></td></tr>
+                <tr><td><span class="ord o2">2</span></td><td><a class="link" href="#">Czech POINT</a></td><td><span class="tag">ISVS</span></td><td>přes Portál občana</td><td>61</td><td><span class="tag">úplné</span></td></tr>
+                <tr><td><span class="ord o2">2</span></td><td><a class="link" href="#">Agenda matrik</a></td><td><span class="tag">agenda</span></td><td>přes ROB</td><td>1</td><td><span class="tag">úplné</span></td></tr>
+                <tr><td><span class="ord o3">3</span></td><td><a class="link" href="agenda-detail.html">A1441 — Krizové řízení</a></td><td><span class="tag">agenda</span></td><td>přes dávky + katastr</td><td>1</td><td><span class="tag" style="background:#fffbeb;color:#92400e">cloud?</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- side -->
+        <div>
+          <div class="card">
+            <h2>Souhrn scénáře</h2>
+            <div class="kv"><span>Epicentrum</span><b>Základní registry</b></div>
+            <div class="kv"><span>Správce</span><b>DIA</b></div>
+            <div class="kv"><span>Bezpečnostní úroveň</span><b>vysoká</b></div>
+            <div class="kv"><span>Zasažené agendy</span><b>211 / 406 (52 %)</b></div>
+            <div class="kv"><span>Zasažené služby</span><b>1 480 / 9 607</b></div>
+            <div class="kv"><span>Kaskáda — řády</span><b>3</b></div>
+            <div class="kv"><span>Neznámé cloud. závislosti</span><b style="color:var(--warn)">38</b></div>
+          </div>
+
+          <div class="card">
+            <h2>Žebříček zranitelnosti <span class="small">(blast radius)</span></h2>
+            <table>
+              <tbody>
+                <tr><td><b>1.</b> <a class="link" href="#">Základní registry</a></td><td style="text-align:right"><b>211</b> agend</td></tr>
+                <tr><td><b>2.</b> <a class="link" href="#">Portál veřejné správy</a></td><td style="text-align:right">96</td></tr>
+                <tr><td><b>3.</b> <a class="link" href="#">IS datových schránek</a></td><td style="text-align:right">88</td></tr>
+                <tr><td><b>4.</b> <a class="link" href="#">Registr obyvatel</a></td><td style="text-align:right">73</td></tr>
+                <tr><td><b>5.</b> <a class="link" href="#">Czech POINT</a></td><td style="text-align:right">61</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>Akce</h2>
+            <div class="kv"><span>Export do policy paperu</span><a class="link" href="#">CSV · JSON</a></div>
+            <div class="kv"><span>Uložit scénář</span><a class="link" href="#">＋ uložit</a></div>
+            <div class="kv"><span>Sdílet (deep-link)</span><a class="link" href="#">🔗 odkaz</a></div>
+            <div class="kv"><span>Otevřít v grafu</span><a class="link" href="#">🕸️ graf</a></div>
+            <div class="small" style="margin-top:8px">* odhad počtu dotčených občanů je orientační (mock dat prototypu)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

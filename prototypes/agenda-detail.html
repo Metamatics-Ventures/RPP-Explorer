@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP Explorer — Detail agendy</title>
+<style>
+  :root{--bg:#0f172a;--soft:#f8fafc;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#4f46e5;--accent2:#6366f1;--ok:#16a34a;--warn:#d97706;--bad:#dc2626}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;background:var(--soft);color:var(--ink);display:flex;min-height:100vh;font-size:14px}
+  .side{width:240px;background:var(--bg);color:#cbd5e1;flex-shrink:0;display:flex;flex-direction:column;padding:18px 0}
+  .brand{display:flex;align-items:center;gap:10px;padding:0 20px 18px;font-weight:700;color:#fff;font-size:16px;border-bottom:1px solid #1e293b;margin-bottom:10px}
+  .brand .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#a855f7);display:flex;align-items:center;justify-content:center}
+  .navsec{padding:10px 14px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#475569}
+  .nav a{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#cbd5e1;text-decoration:none;font-size:13.5px;border-left:3px solid transparent}
+  .nav a:hover{background:#1e293b;color:#fff}
+  .nav a.active{background:#1e293b;color:#fff;border-left-color:var(--accent2);font-weight:600}
+  .nav a .i{width:18px;text-align:center}
+  .side .foot{margin-top:auto;padding:14px 20px;font-size:11px;color:#475569;border-top:1px solid #1e293b}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px}
+  .search{flex:1;max-width:520px;position:relative}
+  .search input{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;background:var(--soft)}
+  .search .ic{position:absolute;left:11px;top:9px;color:var(--muted)}
+  .btn{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:13px;cursor:pointer;color:var(--ink)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .content{padding:20px 24px;overflow:auto}
+  .crumb{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .crumb a{color:var(--accent);text-decoration:none}
+  /* header card */
+  .ehdr{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;display:flex;justify-content:space-between;gap:20px}
+  .ehdr .code{display:inline-block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#eef2ff;color:var(--accent);padding:2px 9px;border-radius:6px;margin-bottom:8px}
+  .ehdr h1{font-size:22px;font-weight:700;line-height:1.25}
+  .ehdr .meta{display:flex;gap:22px;margin-top:14px;flex-wrap:wrap}
+  .ehdr .meta div{font-size:12px;color:var(--muted)} .ehdr .meta b{display:block;color:var(--ink);font-size:14px;margin-top:2px}
+  .badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
+  .badge.ok{background:#f0fdf4;color:var(--ok)} .badge.warn{background:#fffbeb;color:var(--warn)} .badge.bad{background:#fef2f2;color:var(--bad)}
+  .stat{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .miniwrap{display:flex;gap:10px}
+  .mini{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-align:center;min-width:74px}
+  .mini b{font-size:20px;display:block} .mini span{font-size:11px;color:var(--muted)}
+  /* tabs */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  .tabs a{padding:10px 14px;font-size:13.5px;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;font-weight:500}
+  .tabs a.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+  /* layout */
+  .cols{display:grid;grid-template-columns:1fr 320px;gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+  .card h2{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .card h2 .cnt{font-weight:600;color:var(--muted);font-size:12px;background:var(--soft);padding:2px 8px;border-radius:20px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:7px 8px;border-bottom:1px solid var(--line)}
+  td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  tr:hover td{background:var(--soft)}
+  a.link{color:var(--accent);text-decoration:none;font-weight:600}
+  a.link:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--muted)}
+  .chip{display:inline-block;font-size:11px;background:#eef2ff;color:var(--accent);padding:2px 8px;border-radius:6px;margin:2px 2px 0 0}
+  .para{font-size:12.5px;color:#475569;line-height:1.5}
+  .relrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .relrow:last-child{border:0}
+  .side2 .card{padding:16px}
+  .flow{font-size:12.5px}
+  .flow .fr{display:flex;align-items:center;gap:8px;padding:6px 0}
+  .arrow{color:var(--muted)}
+  .rdir{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px}
+  .rin{background:#ecfdf5;color:var(--ok)} .rout{background:#eff6ff;color:#2563eb}
+  .esb{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#2563eb}
+</style>
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><div class="logo">⬢</div> RPP&nbsp;Explorer</div>
+    <div class="navsec">Přehled</div>
+    <nav class="nav"><a href="dashboard.html"><span class="i">▦</span> Dashboard</a></nav>
+    <div class="navsec">Entity</div>
+    <nav class="nav">
+      <a class="active" href="agenda-detail.html"><span class="i">📋</span> Agendy</a>
+      <a href="#"><span class="i">🏛️</span> Orgány (OVM)</a>
+      <a href="#"><span class="i">💻</span> Systémy (ISVS)</a>
+      <a href="#"><span class="i">🧩</span> Služby</a>
+      <a href="#"><span class="i">🗂️</span> Údaje</a>
+      <a href="#"><span class="i">🔑</span> Oprávnění / Toky</a>
+    </nav>
+    <div class="navsec">Analýza</div>
+    <nav class="nav">
+      <a href="#"><span class="i">🕸️</span> Graf vazeb</a>
+      <a href="dopady-kaskady.html"><span class="i">⚠️</span> Dopady &amp; kaskády</a>
+      <a href="#"><span class="i">📊</span> Analytika</a>
+      <a href="#"><span class="i">⚖️</span> Srovnání</a>
+    </nav>
+    <div class="foot">PS07 kGovernment · AFCEA ČR<br>Zdroj: RPP open data (DIA)</div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="search"><span class="ic">🔍</span><input placeholder="Hledat napříč registrem…"></div>
+      <button class="btn">↗ Export</button>
+      <button class="btn primary">⚠ Simuluj výpadek</button>
+    </header>
+
+    <div class="content">
+      <div class="crumb"><a href="dashboard.html">Dashboard</a> › <a href="#">Agendy</a> › <span>A1114</span></div>
+
+      <!-- entity header -->
+      <div class="ehdr">
+        <div>
+          <span class="code">agenda / A1114</span>
+          <h1>Agenda zákona o hospodaření energií</h1>
+          <div class="meta">
+            <div>Ohlašovatel<b><a class="link" href="#">Ministerstvo průmyslu a obchodu</a></b></div>
+            <div>Platnost od<b>3. 9. 2024</b></div>
+            <div>Poslední změna<b>21. 8. 2024</b></div>
+            <div>Stanovisko ke službám<b><span class="badge ok">kladné</span></b></div>
+            <div>Stanovisko k údajům<b><span class="badge warn">bez stanoviska</span></b></div>
+          </div>
+        </div>
+        <div class="miniwrap">
+          <div class="mini"><b>14</b><span>činností</span></div>
+          <div class="mini"><b>6</b><span>orgánů</span></div>
+          <div class="mini"><b>3</b><span>ISVS</span></div>
+          <div class="mini"><b>9</b><span>služeb</span></div>
+        </div>
+      </div>
+
+      <!-- tabs -->
+      <div class="tabs">
+        <a class="active" href="#">Přehled</a>
+        <a href="#">Činnosti (14)</a>
+        <a href="#">Vykonávající OVM (6)</a>
+        <a href="#">Systémy (3)</a>
+        <a href="#">Služby (9)</a>
+        <a href="#">Údaje</a>
+        <a href="#">Oprávnění / toky</a>
+      </div>
+
+      <div class="cols">
+        <!-- left: main -->
+        <div>
+          <div class="card">
+            <h2>Činnosti agendy <span class="cnt">14 · zobrazeno 5</span></h2>
+            <table>
+              <thead><tr><th>Kód</th><th>Název činnosti</th><th>Ustanovení (eSbírka)</th><th>Výkon</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">CR6661</td><td><a class="link" href="#">Zpracování návrhu Státní energetické koncepce (SEK), předložení vládě, vyhodnocování</a></td><td class="esb">§ 3, § 11/1/a · z. 406/2000</td><td><span class="badge ok">povinný</span></td></tr>
+                <tr><td class="mono">CR6662</td><td><a class="link" href="#">Pořizování územní energetické koncepce</a></td><td class="esb">§ 4 · z. 406/2000</td><td><span class="badge ok">povinný</span></td></tr>
+                <tr><td class="mono">CR6663</td><td><a class="link" href="#">Vedení Státní energetické inspekce a kontrola</a></td><td class="esb">§ 13 · z. 406/2000</td><td><span class="badge ok">povinný</span></td></tr>
+                <tr><td class="mono">CR6671</td><td><a class="link" href="#">Vydávání průkazu energetické náročnosti budovy</a></td><td class="esb">§ 7a · z. 406/2000</td><td><span class="badge warn">volitelný</span></td></tr>
+                <tr><td class="mono">CR6680</td><td><a class="link" href="#">Poskytování dotací z programu Nová zelená úsporám</a></td><td class="esb">§ 5/1 · z. 406/2000</td><td><span class="badge warn">volitelný</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>Vykonávající orgány <span class="cnt">6</span></h2>
+            <table>
+              <thead><tr><th>IČO</th><th>Orgán veřejné moci</th><th>Působnost</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">47609109</td><td><a class="link" href="#">Státní energetická inspekce</a></td><td>celostátní</td></tr>
+                <tr><td class="mono">47609109</td><td><a class="link" href="#">Ministerstvo průmyslu a obchodu</a></td><td>ústřední</td></tr>
+                <tr><td class="mono">70890366</td><td><a class="link" href="#">Krajský úřad — odbor energetiky</a></td><td>krajská</td></tr>
+                <tr><td class="mono">00064581</td><td><a class="link" href="#">Magistrát hl. m. Prahy</a></td><td>obecní (ORP)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>Informační systémy podporující agendu <span class="cnt">3</span></h2>
+            <table>
+              <thead><tr><th>ID</th><th>Systém (ISVS)</th><th>Správce</th><th>Bezp. úroveň</th><th></th></tr></thead>
+              <tbody>
+                <tr><td class="mono">isvs/3</td><td><a class="link" href="#">Portál veřejné správy</a></td><td>DIA</td><td><span class="badge ok">vysoká</span></td><td><a class="link" href="dopady-kaskady.html">⚠ dopad</a></td></tr>
+                <tr><td class="mono">isvs/8842</td><td><a class="link" href="#">ENEX — energetická evidence</a></td><td>MPO</td><td><span class="badge warn">střední</span></td><td><a class="link" href="dopady-kaskady.html">⚠ dopad</a></td></tr>
+                <tr><td class="mono">isvs/9120</td><td><a class="link" href="#">Registr energetických specialistů</a></td><td>MPO</td><td><span class="badge warn">střední</span></td><td><a class="link" href="dopady-kaskady.html">⚠ dopad</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- right: side -->
+        <div class="side2">
+          <div class="card">
+            <h2>Charakteristika</h2>
+            <p class="para">Agenda upravuje hospodaření energií, energetickou náročnost budov, Státní energetickou koncepci a výkon Státní energetické inspekce dle zákona č. 406/2000 Sb.</p>
+            <div style="margin-top:10px">
+              <span class="chip">energie</span><span class="chip">SEK</span><span class="chip">úspory</span><span class="chip">budovy</span><span class="chip">inspekce</span><span class="chip">krizová připravenost</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Toky údajů <span class="cnt">UC2</span></h2>
+            <div class="flow">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Tato agenda čte z:</div>
+              <div class="fr"><span class="rdir rin">ČTE</span><span class="arrow">←</span><a class="link" href="#">A101 — Obyvatelé (ROB)</a></div>
+              <div class="fr"><span class="rdir rin">ČTE</span><span class="arrow">←</span><a class="link" href="#">A115 — Osoby (ROS)</a></div>
+              <div class="fr"><span class="rdir rin">ČTE</span><span class="arrow">←</span><a class="link" href="#">A124 — Nemovitosti (RUIAN)</a></div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:8px 0 4px">Z této agendy čtou:</div>
+              <div class="fr"><span class="rdir rout">DÁVÁ</span><span class="arrow">→</span><a class="link" href="#">A1441 — Krizové řízení</a></div>
+              <div class="fr"><span class="rdir rout">DÁVÁ</span><span class="arrow">→</span><a class="link" href="#">A988 — Statistika</a></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Zdroj &amp; akce</h2>
+            <div class="relrow"><span>Hlavní ustanovení</span><a class="link" href="#">z. 406/2000 Sb.</a></div>
+            <div class="relrow"><span>Detail agendy (RPP-AIS)</span><a class="link" href="#">↗ agendy-detail</a></div>
+            <div class="relrow"><span>Zobrazit v grafu</span><a class="link" href="#">🕸️ otevřít</a></div>
+            <div class="relrow"><span>Přidat do krizového balíku</span><a class="link" href="#">＋ přidat</a></div>
+            <div class="relrow"><span>Export</span><a class="link" href="#">CSV · JSON</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
