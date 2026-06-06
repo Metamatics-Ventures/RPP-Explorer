@@ -494,70 +494,100 @@ async function graf(arg){
 }
 
 /* ---------- DOPADY & KASKÁDY ---------- */
+const ORDC=['#7a0f3d','#ef4444','#f97316','#f59e0b','#eab308','#84cc16','#22d3ee','#7c5cff'];
 async function dopady(arg){
   await ensureNames(); const isvsRows = await load('isvs'); const agendyRows = await load('agendy');
   const opr = await load('opravneni');
   const agById = Object.fromEntries(agendyRows.map(a=>[a.id,a]));
-  // reader map: do-agenda -> [z-agenda] (kdo čte ze zdroje)
-  const readers = {}; opr.forEach(o=>{ if(o['do']&&o['z']){ (readers[o['do']]=readers[o['do']]||[]).push(o['z']); }});
-  const start = arg || (isvsRows.find(i=>/Základní registry|Portál|registr obyvatel/i.test(i.nazev)) || isvsRows[0]).id;
-  const sys = isvsRows.find(i=>i.id===start) || isvsRows[0];
-  // BFS by order
-  const order = {}; // agendaId -> order
-  let frontier = (sys.agendy||[]).slice();
-  frontier.forEach(a=>order[a]=1);
-  for (let depth=2; depth<=3; depth++){
-    const next=[];
-    frontier.forEach(ag=>{ (readers[ag]||[]).forEach(z=>{ if(order[z]==null){ order[z]=depth; next.push(z); } }); });
-    frontier = next;
+  const readers = {}; opr.forEach(o=>{ if(o['do']&&o['z']){ (readers[o['do']]=readers[o['do']]||[]).push(o['z']); }}); // zdroj -> [čtenáři]
+  // default: a foundational system — supports few agendas, but ones that many others read from (base register)
+  let defId;
+  if (!arg){
+    const topAg = agendyRows.reduce((b,a)=>a.c.opr_in>b.c.opr_in?a:b, agendyRows[0]);
+    const cand = isvsRows.filter(i=>(i.agendy||[]).includes(topAg.id) && i.c.agend>=1 && i.c.agend<=15).sort((a,b)=>a.c.agend-b.c.agend);
+    defId = (cand[0] || isvsRows.filter(i=>i.c.agend>=1 && i.c.agend<=6)[0] || isvsRows[0]).id;
   }
-  const impacted = Object.keys(order);
-  const byOrder = {1:[],2:[],3:[]}; impacted.forEach(a=>byOrder[order[a]] && byOrder[order[a]].push(a));
-  const svcCount = impacted.reduce((s,a)=>s+((agById[a]&&agById[a].c.sluzby)||0),0);
-  const ovmSet = new Set(); impacted.forEach(a=>{ const o=agById[a]; if(o)(o.ovm_sample||[]).forEach(x=>ovmSet.add(x)); });
+  const start = arg || defId;
+  const sys = isvsRows.find(i=>i.id===start) || isvsRows[0];
   const options = isvsRows.slice(0,400).map(i=>`<option value="${esc(i.id)}" ${i.id===start?'selected':''}>${esc(i.nazev)} · ${i.c.agend} agend</option>`).join('');
+  let depth = Math.min(Math.max(window.__dDepth||3,1),7);
   view.innerHTML = `
     <div class="pagehdr"><div><h1>Dopady &amp; kaskády <span class="badge bad">domeček z karet</span></h1>
-      <div class="sub">Simulace výpadku systému a propagace dopadu přes graf vazeb. Order 2/3 = agendy, které čtou data z dotčených agend (oprávnění).</div></div></div>
+      <div class="sub">Simulace výpadku systému a propagace přes oprávnění (agenda čte data z dotčené agendy). Vyber, kolik řádů kaskády zobrazit.</div></div></div>
     <div class="card"><div class="toolbar">
-      <span class="muted small">Výchozí systém (co vypadne):</span>
+      <span class="muted small">Co vypadne (systém):</span>
       <select id="dsel" class="grow">${options}</select>
+      <span class="muted small" style="margin-left:8px">Hloubka kaskády:</span>
+      <span id="ddepth" style="display:inline-flex;gap:4px"></span>
     </div></div>
-    <div class="ban">
-      <div><div class="big">${fmt(byOrder[1].length+byOrder[2].length+byOrder[3].length)}</div><div class="lab">zasažených agend</div></div>
-      <div class="sep"></div><div><div class="big">${fmt(svcCount)}</div><div class="lab">zasažených služeb</div></div>
-      <div class="sep"></div><div><div class="big">${fmt(ovmSet.size)}+</div><div class="lab">dotčených orgánů</div></div>
-      <div class="sep"></div><div><div class="big">3</div><div class="lab">řády kaskády</div></div>
-    </div>
-    <div id="cyd"></div>
-    <div class="legend"><span><i style="background:#7a0f3d"></i>epicentrum (systém)</span><span><i style="background:#ef4444"></i>1. řád</span><span><i style="background:#f97316"></i>2. řád</span><span><i style="background:#f59e0b"></i>3. řád</span></div>
-    <div class="gap" style="margin-top:18px">⚠ <b>Mezera ve standardu:</b> RPP nezachycuje cloudové závislosti systémů — reálný dosah výpadku může být <b>větší</b>. Bezpečnostní úroveň epicentra: <b>${esc(sys.bezuroven||'neuvedeno')}</b>.</div>
-    <div class="card"><h2>Tabulka dopadů <span class="small muted">(${fmt(impacted.length)} agend)</span></h2>
-      ${table(impacted.slice(0,200).map(a=>({a})),[
-        {h:'Řád',render:r=>`<span class="badge ${order[r.a]===1?'bad':order[r.a]===2?'warn':'grey'}">${order[r.a]}. řád</span>`},
-        {h:'Agenda',render:r=>link(r.a)},
-        {h:'Služeb',cls:'right',render:r=>fmt((agById[r.a]&&agById[r.a].c.sluzby)||0)},
-        {h:'Orgánů',cls:'right',render:r=>fmt((agById[r.a]&&agById[r.a].c.ovm)||0)},
-      ])}
-    </div>`;
+    <div id="dbody"></div>`;
   byId('dsel').addEventListener('change', e=>{ location.hash = '#/dopady/'+encodeURIComponent(e.target.value); });
-  // cascade graph
-  const ocol={0:'#7a0f3d',1:'#ef4444',2:'#f97316',3:'#f59e0b'};
-  const els=[{data:{id:sys.id,label:sys.nazev,o:0}}];
-  ['1','2','3'].forEach(k=>byOrder[k].slice(0, k==='1'?14:8).forEach(a=>{
-    els.push({data:{id:a,label:nameOf(a),o:+k}});
-    const src = k==='1'? sys.id : null;
-    els.push({data:{id:sys.id+'-'+a, source:k==='1'?sys.id:sys.id, target:a}});
-  }));
-  byId('cyd').style.background='radial-gradient(circle at 50% 42%, #112c57, #060f24)';
-  byId('cyd').style.borderColor='#0c1f44';
-  cytoscape({ container:byId('cyd'), elements:els, wheelSensitivity:0.2,
-    style:[
-      {selector:'node',style:{'background-color':e=>ocol[e.data('o')],'label':'data(label)','font-size':'10px','font-weight':600,'color':'#eaf2ff','text-outline-width':2.5,'text-outline-color':'#06122b','text-wrap':'wrap','text-max-width':'82px','width':e=>e.data('o')===0?54:26,'height':e=>e.data('o')===0?54:26,'text-valign':'bottom','text-margin-y':4,'border-width':2,'border-color':'rgba(255,255,255,.25)'}},
-      {selector:'edge',style:{'width':1.4,'line-color':'rgba(255,120,120,.6)','curve-style':'bezier','target-arrow-shape':'triangle','target-arrow-color':'rgba(255,120,120,.6)','arrow-scale':0.8}},
-    ],
-    layout:{name:'concentric', concentric:n=>3-(n.data('o')), levelWidth:()=>1, minNodeSpacing:38} })
-    .on('tap','node',e=>{ const id=e.target.id(); const rt=routeOf(id); if(rt) location.hash='#/'+rt+'/'+encodeURIComponent(id); });
+  function renderDepthCtl(){
+    byId('ddepth').innerHTML = [1,2,3,4,5,'Max'].map(d=>{
+      const val = d==='Max'?7:d; const on = (d==='Max'? depth>=7 : depth===d);
+      return `<button class="btn" data-d="${val}" style="padding:6px 12px;${on?'background:var(--navy);color:#fff;border-color:var(--navy)':''}">${d}</button>`;
+    }).join('');
+    byId('ddepth').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ depth=+b.dataset.d; window.__dDepth=depth; draw(); }));
+  }
+  function draw(){
+    renderDepthCtl();
+    // BFS with parent tracking
+    const order={}, parent={};
+    (sys.agendy||[]).forEach(a=>{ order[a]=1; parent[a]=sys.id; });
+    let frontier=(sys.agendy||[]).slice(), used=Math.min(1,depth);
+    for(let d=2; d<=depth; d++){
+      const next=[];
+      frontier.forEach(ag=>{ (readers[ag]||[]).forEach(z=>{ if(order[z]==null){ order[z]=d; parent[z]=ag; next.push(z);} }); });
+      if(!next.length) break; frontier=next; used=d;
+    }
+    const impacted=Object.keys(order);
+    const maxO=impacted.reduce((m,a)=>Math.max(m,order[a]),1);
+    const byOrder={}; for(let k=1;k<=maxO;k++) byOrder[k]=[]; impacted.forEach(a=>byOrder[order[a]].push(a));
+    const svcCount=impacted.reduce((s,a)=>s+((agById[a]&&agById[a].c.sluzby)||0),0);
+    const ovmSet=new Set(); impacted.forEach(a=>{const o=agById[a]; if(o)(o.ovm_sample||[]).forEach(x=>ovmSet.add(x));});
+    const legend = [`<span><i style="background:${ORDC[0]}"></i>epicentrum</span>`].concat(
+      Array.from({length:maxO},(_,k)=>`<span><i style="background:${ORDC[(k+1)%ORDC.length]}"></i>${k+1}. řád</span>`)).join('');
+    byId('dbody').innerHTML = `
+      <div class="ban">
+        <div><div class="big">${fmt(impacted.length)}</div><div class="lab">zasažených agend</div></div>
+        <div class="sep"></div><div><div class="big">${fmt(svcCount)}</div><div class="lab">zasažených služeb</div></div>
+        <div class="sep"></div><div><div class="big">${fmt(ovmSet.size)}+</div><div class="lab">dotčených orgánů</div></div>
+        <div class="sep"></div><div><div class="big">${maxO}${maxO<depth?'':(depth>=7?'+':'')}</div><div class="lab">řádů kaskády</div></div>
+      </div>
+      <div id="cyd"></div>
+      <div class="legend">${legend}<span class="small">· klik na uzel = detail</span></div>
+      <div class="gap" style="margin-top:18px">⚠ <b>Mezera ve standardu:</b> RPP nezachycuje cloudové závislosti systémů — reálný dosah může být <b>větší</b>. Bezpečnostní úroveň epicentra: <b>${esc(sys.bezuroven||'neuvedeno')}</b>.</div>
+      <div class="card"><h2>Tabulka dopadů <span class="small muted">(${fmt(impacted.length)} agend, ${maxO} řádů)</span></h2>
+        ${table(impacted.sort((a,b)=>order[a]-order[b]).slice(0,300).map(a=>({a})),[
+          {h:'Řád',render:r=>`<span class="badge grey" style="background:${ORDC[order[r.a]%ORDC.length]}22;color:${ORDC[order[r.a]%ORDC.length]}">${order[r.a]}. řád</span>`},
+          {h:'Agenda',render:r=>link(r.a)},
+          {h:'Čte z',render:r=>parent[r.a]===sys.id?'<span class="muted small">— epicentrum</span>':link(parent[r.a])},
+          {h:'Služeb',cls:'right',render:r=>fmt((agById[r.a]&&agById[r.a].c.sluzby)||0)},
+          {h:'Orgánů',cls:'right',render:r=>fmt((agById[r.a]&&agById[r.a].c.ovm)||0)},
+        ])}
+      </div>`;
+    // graph: parent -> child chain, capped for readability
+    const cap={1:18}; const added=new Set([sys.id]);
+    const els=[{data:{id:sys.id,label:sys.nazev.slice(0,40),o:0}}];
+    for(let k=1;k<=maxO;k++){
+      const lim = cap[k]|| (k===1?18:10);
+      byOrder[k].slice(0,lim).forEach(a=>{
+        if(added.size>110) return;
+        added.add(a); els.push({data:{id:a,label:(nameOf(a)||a).slice(0,40),o:k}});
+        if(added.has(parent[a])) els.push({data:{id:parent[a]+'>'+a, source:parent[a], target:a}});
+      });
+    }
+    byId('cyd').style.background='radial-gradient(circle at 50% 42%, #112c57, #060f24)';
+    byId('cyd').style.borderColor='#0c1f44';
+    cytoscape({ container:byId('cyd'), elements:els, wheelSensitivity:0.2,
+      style:[
+        {selector:'node',style:{'background-color':e=>ORDC[e.data('o')%ORDC.length],'label':'data(label)','font-size':'10px','font-weight':600,'color':'#eaf2ff','text-outline-width':2.5,'text-outline-color':'#06122b','text-wrap':'wrap','text-max-width':'82px','width':e=>e.data('o')===0?54:24,'height':e=>e.data('o')===0?54:24,'text-valign':'bottom','text-margin-y':4,'border-width':2,'border-color':'rgba(255,255,255,.25)'}},
+        {selector:'edge',style:{'width':1.4,'line-color':'rgba(255,150,150,.55)','curve-style':'bezier','target-arrow-shape':'triangle','target-arrow-color':'rgba(255,150,150,.55)','arrow-scale':0.8}},
+      ],
+      layout:{name:'concentric', concentric:n=>maxO+1-n.data('o'), levelWidth:()=>1, minNodeSpacing:34} })
+      .on('tap','node',e=>{ const id=e.target.id(); const rt=routeOf(id); if(rt) location.hash='#/'+rt+'/'+encodeURIComponent(id); });
+  }
+  draw();
 }
 
 /* ---------- ANALYTIKA ---------- */
