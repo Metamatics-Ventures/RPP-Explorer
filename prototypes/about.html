@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPP Explorer — O projektu</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 24px 64px}
+  a{color:#a5b4fc}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;font-size:16px}
+  .brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#4f46e5,#a855f7);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .nav a{color:#cbd5e1;text-decoration:none;font-size:14px;margin-left:18px}
+  .nav a:hover{color:#fff}
+  h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+  .lead{color:#94a3b8;font-size:16px;max-width:680px;margin-bottom:14px}
+  .tag{display:inline-block;font-size:12px;color:#a5b4fc;background:#1e293b;padding:4px 11px;border-radius:20px;margin-bottom:36px}
+  section{margin-bottom:40px}
+  h2{font-size:22px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  h2 .dot{width:10px;height:10px;border-radius:50%;background:#6366f1}
+  p{color:#cbd5e1;margin-bottom:12px}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:24px;margin-bottom:16px}
+  .card.brandcard{background:linear-gradient(135deg,#1e1b4b,#1e293b)}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .pill{font-size:12px;background:#0f172a;border:1px solid #334155;color:#cbd5e1;padding:4px 10px;border-radius:20px}
+  /* members */
+  .members{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .m{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:14px 16px}
+  .m .n{font-weight:700;color:#fff;font-size:14.5px}
+  .m .r{color:#94a3b8;font-size:12.5px;margin-top:2px}
+  .m .o{color:#818cf8;font-size:12px;margin-top:4px}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .stat{display:flex;gap:26px;flex-wrap:wrap;margin-top:8px}
+  .stat div b{font-size:22px;color:#fff;display:block} .stat div span{font-size:12px;color:#94a3b8}
+  .foot{margin-top:48px;border-top:1px solid #1e293b;padding-top:18px;color:#475569;font-size:12px}
+  .note{font-size:12px;color:#64748b;margin-top:10px}
+  @media(max-width:720px){.members,.twocol{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><div class="logo">⬢</div> RPP Explorer</div>
+    <nav class="nav">
+      <a href="index.html">Prototypy</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="https://github.com/Metamatics-Ventures/RPP-Explorer" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+
+  <h1>O projektu</h1>
+  <p class="lead">RPP Explorer je průzkumník a znalostní vrstva nad českým <b>Registrem práv a povinností</b> — propojuje agendy, orgány veřejné moci, informační systémy, služby a údaje do jednoho prozkoumatelného grafu a staví nad nimi analýzy pro datově podložené policy papery.</p>
+  <span class="tag">Iniciativa PS07 kGovernment · AFCEA ČR · vyvíjí Metamatics Ventures</span>
+
+  <!-- DATA -->
+  <section>
+    <h2><span class="dot"></span>Z čeho vychází</h2>
+    <div class="card">
+      <p>Aplikace pracuje s veřejnými <b>open daty Registru práv a povinností</b>, který spravuje <b>Digitální a informační agentura (DIA)</b>. Stažena je kompletní datová sada — 56 souborů — a přerestrukturalizována do propojené databáze.</p>
+      <div class="stat">
+        <div><b>406</b><span>agend</span></div>
+        <div><b>12 110</b><span>informačních systémů</span></div>
+        <div><b>19 555</b><span>orgánů veřejné moci</span></div>
+        <div><b>9 607</b><span>služeb</span></div>
+        <div><b>957 582</b><span>vazeb působnosti</span></div>
+      </div>
+      <p class="note">Zdroj: <a href="https://rpp-opendata.egon.gov.cz/odrpp/datovasada/" target="_blank" rel="noopener">rpp-opendata.egon.gov.cz</a> · katalog <a href="https://data.gov.cz" target="_blank" rel="noopener">data.gov.cz</a> (poskytovatel DIA). Data jsou veřejná, aktualizace denní.</p>
+    </div>
+  </section>
+
+  <!-- METAMATICS -->
+  <section>
+    <h2><span class="dot" style="background:#a855f7"></span>Metamatics Ventures</h2>
+    <div class="card brandcard">
+      <p><b>Metamatics Ventures</b> je venture studio zaměřené na <b>agentní umělou inteligenci</b> a aplikovanou inteligenci — navrhuje a staví produkty, kde inteligentní agenti pracují s reálnými daty a rozhodovacími procesy. RPP Explorer navrhlo a vyvíjí jako příspěvek k datově řízené veřejné správě v ČR.</p>
+      <p>Studio propojuje datové inženýrství, návrh znalostních vrstev a orchestraci AI agentů — od ETL nad veřejnými registry přes grafové modely vazeb až po analytické nástroje a (v další fázi) zpřístupnění dat agentům přes standardní rozhraní.</p>
+      <div class="pillrow">
+        <span class="pill">Agentní AI</span><span class="pill">Znalostní vrstvy</span><span class="pill">Datové inženýrství</span><span class="pill">Aplikovaná inteligence</span><span class="pill">Veřejná správa</span>
+      </div>
+      <p class="note" style="margin-top:14px">Web: <a href="https://metamatics.ventures" target="_blank" rel="noopener">metamatics.ventures</a></p>
+    </div>
+  </section>
+
+  <!-- AFCEA GROUP -->
+  <section>
+    <h2><span class="dot" style="background:#16a34a"></span>Pracovní skupina PS07 kGovernment (AFCEA ČR)</h2>
+    <div class="card">
+      <p><b>AFCEA Česká pobočka</b> je odborné sdružení propojující veřejnou správu, armádu, akademii a soukromý sektor v oblasti komunikačních a informačních systémů a bezpečnosti. Pracovní skupina <b>PS07 kGovernment</b> rozvíjí koncept „knowledge government" — <b>datově a znalostně řízeného státu</b>.</p>
+      <p>Skupina se schází pravidelně, připravuje policy papery k digitalizaci a odolnosti státu a spolupracuje s <b>Centrem pro informovanou společnost (CIS)</b>. RPP Explorer vznikl jako praktická ukázka „znalostní vrstvy", o které skupina diskutuje — od dat přes analýzy k podkladům pro rozhodování.</p>
+      <div class="pillrow">
+        <span class="pill">Znalostní vrstva</span><span class="pill">Datově řízený stát</span><span class="pill">Krizová připravenost</span><span class="pill">Interoperabilita dat</span><span class="pill">Policy papery</span>
+      </div>
+      <p class="note" style="margin-top:14px">Více: <a href="https://afcea.cz/o-nas-ps07/" target="_blank" rel="noopener">afcea.cz — PS07</a></p>
+    </div>
+
+    <h2 style="font-size:17px;margin-top:24px"><span class="dot" style="background:#16a34a;width:8px;height:8px"></span>Členové pracovní skupiny</h2>
+    <div class="members">
+      <div class="m"><div class="n">Tomáš Vejlupek</div><div class="r">Iniciátor konceptu kGovernment, facilitace</div><div class="o">competitive intelligence (TOVEK)</div></div>
+      <div class="m"><div class="n">Jakub Bareš</div><div class="r">Výkonný předseda iniciativy, strategie</div><div class="o">agentní AI (Metamatics / Complexity)</div></div>
+      <div class="m"><div class="n">Vladimír Rohel</div><div class="r">Kyberbezpečnost, procesy veřejné správy</div><div class="o">Rada AFCEA ČR (NAKIT)</div></div>
+      <div class="m"><div class="n">Jaroslav Pejčoch</div><div class="r">Krizové řízení a legislativa · místopředseda PS07</div><div class="o">krizové systémy (T-SOFT)</div></div>
+      <div class="m"><div class="n">Vladislav Severa</div><div class="r">AI agenti, agentní architektury, KPI státu</div><div class="o">autonomní AI agenti (knowdroids.ai)</div></div>
+      <div class="m"><div class="n">Martin Vlasta</div><div class="r">Legal tech, právní aspekty AI</div><div class="o">Advokátní asociace pro AI</div></div>
+      <div class="m"><div class="n">Petr Kučera</div><div class="r">Cloudové služby a krizové systémy</div><div class="o">enterprise architecture (Power Patterns)</div></div>
+      <div class="m"><div class="n">Pavel Maděra</div><div class="r">Kyberbezpečnost, krizové řízení</div></div>
+      <div class="m"><div class="n">Dominik Regner</div><div class="r">Datová analytika pro vyšetřovací složky</div><div class="o">(Cogniware)</div></div>
+      <div class="m"><div class="n">Filip Kasabov</div><div class="r">Bezpečnostní operace (SOC / CSIRT)</div></div>
+      <div class="m"><div class="n">Miroslav Nečas</div><div class="r">Organizační podpora, bezpečnostní scénáře</div></div>
+      <div class="m"><div class="n">Tomáš Pokorný</div><div class="r">IT a bezpečnost, data-driven rozhodování</div></div>
+    </div>
+    <p class="note">Pozn.: uvedeni jsou členové pracovní skupiny PS07 kGovernment s veřejně známou odborností. Aktuální oficiální složení viz web AFCEA.</p>
+  </section>
+
+  <div class="foot">
+    RPP Explorer · iniciativa PS07 kGovernment (AFCEA ČR) · vyvíjí Metamatics Ventures ·
+    zdroj dat <a href="https://rpp-opendata.egon.gov.cz/odrpp/datovasada/" target="_blank" rel="noopener">RPP open data (DIA)</a> ·
+    <a href="https://github.com/Metamatics-Ventures/RPP-Explorer" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div>
+</body>
+</html>
