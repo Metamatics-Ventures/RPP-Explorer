@@ -420,44 +420,63 @@ async function opravneni(arg){
 }
 
 /* ---------- GRAF VAZEB (cytoscape) ---------- */
+function typeOf(id){ const r=routeOf(id); return r==='agendy'?'agenda':r==='isvs'?'isvs':r==='ovm'?'ovm':r==='sluzby'?'sluzba':'agenda'; }
+const GCOL={agenda:'#0a1f44', isvs:'#00d8ff', ovm:'#7c5cff', sluzba:'#ff2d8d'};
 async function graf(arg){
-  await ensureNames(); const agendyRows = await load('agendy');
-  const start = arg || (agendyRows[0] && agendyRows[0].id);
-  view.innerHTML = `<div class="pagehdr"><div><h1>Graf vazeb</h1><div class="sub">Ego-graf okolo uzlu · klikni na uzel pro rozbalení</div></div>
-     <div><input id="gsearch" class="btn" style="min-width:280px" placeholder="Hledat agendu a vykreslit…"></div></div>
+  await ensureNames();
+  const [agendyRows, isvsRows, sluzby, opr] = await Promise.all([load('agendy'),load('isvs'),load('sluzby'),load('opravneni')]);
+  const agMap=Object.fromEntries(agendyRows.map(a=>[a.id,a]));
+  const isvsMap=Object.fromEntries(isvsRows.map(i=>[i.id,i]));
+  let ovmMap=null;
+  const score=a=>a.c.isvs+a.c.sluzby+a.c.opr_in+a.c.opr_out;
+  const rich=agendyRows.reduce((b,a)=>score(a)>score(b)?a:b, agendyRows[0]);
+  const start=(arg&&routeOf(arg))?arg:rich.id;
+  view.innerHTML=`<div class="pagehdr"><div><h1>Graf vazeb</h1><div class="sub">Klikni na uzel a graf se rozbalí o jeho sousedy · průzkum vazeb celého registru</div></div>
+     <div style="display:flex;gap:8px"><input id="gsearch" class="btn" style="min-width:260px" placeholder="Hledat agendu…">
+       <button class="btn" id="greset">↺ Reset</button></div></div>
+     <div id="gselbar" class="card" style="padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><span class="muted small">Klikni na uzel pro rozbalení, nebo otevři jeho detail →</span><span id="gseldetail"></span></div>
      <div id="cy"></div>
-     <div class="legend"><span><i style="background:#0a1f44"></i>agenda</span><span><i style="background:#00d8ff"></i>ISVS</span><span><i style="background:#7c5cff"></i>orgán</span><span><i style="background:#ff2d8d"></i>služba</span><span><i style="background:#86ff00"></i>agenda (tok údajů)</span></div>`;
-  const opr = await load('opravneni'); const sluzby = await load('sluzby');
-  function egoElements(agId){
-    const a = agendyRows.find(x=>x.id===agId); if(!a) return [];
-    const els = [{data:{id:agId, label:a.nazev, t:'agenda'}}];
-    const seen = new Set([agId]);
-    const add=(id,label,t)=>{ if(id===agId||seen.has(id)) return; seen.add(id); els.push({data:{id,label,t}}); els.push({data:{id:agId+'->'+id,source:agId,target:id,t}}); };
-    a.isvs.slice(0,8).forEach(id=>add(id, nameOf(id), 'isvs'));
-    (a.ovm_sample||[]).slice(0,8).forEach(id=>add(id, nameOf(id), 'ovm'));
-    sluzby.filter(s=>s.agenda===agId).slice(0,6).forEach(s=>add(s.id, s.nazev, 'sluzba'));
-    opr.filter(o=>o['z']===agId).slice(0,6).forEach(o=>add(o['do'], nameOf(o['do']), 'agenda2'));
-    opr.filter(o=>o['do']===agId).slice(0,6).forEach(o=>add(o['z'], nameOf(o['z']), 'agenda2'));
-    return els;
-  }
-  const colors = {agenda:'#0a1f44', isvs:'#00d8ff', ovm:'#7c5cff', sluzba:'#ff2d8d', agenda2:'#86ff00'};
-  const cy = cytoscape({ container: byId('cy'),
-    elements: egoElements(start),
+     <div class="legend"><span><i style="background:#0a1f44"></i>agenda</span><span><i style="background:#00d8ff"></i>ISVS</span><span><i style="background:#7c5cff"></i>orgán</span><span><i style="background:#ff2d8d"></i>služba</span><span class="small">· velikost dle propojení · šipka = směr toku</span></div>`;
+  byId('cy').style.background='radial-gradient(circle at 50% 42%, #112c57, #060f24)';
+  byId('cy').style.borderColor='#0c1f44';
+  const cy=cytoscape({ container:byId('cy'), elements:[], wheelSensitivity:0.2,
     style:[
-      {selector:'node',style:{'background-color':e=>colors[e.data('t')]||'#0a1f44','label':'data(label)','font-size':'9px','color':'#0a1730','text-wrap':'wrap','text-max-width':'90px','width':24,'height':24,'text-valign':'bottom','text-margin-y':3}},
-      {selector:'node[t="agenda"]',style:{'width':40,'height':40,'background-color':'#0a1f44','color':'#0a1730','font-weight':'bold'}},
-      {selector:'edge',style:{'width':1.4,'line-color':'#cbd5e1','curve-style':'bezier','target-arrow-shape':'triangle','target-arrow-color':'#cbd5e1','arrow-scale':0.7}},
+      {selector:'node',style:{'background-color':e=>GCOL[e.data('t')]||'#64748b','label':'data(label)','font-size':'10px','font-weight':600,'color':'#eaf2ff','text-outline-width':2.5,'text-outline-color':'#06122b','text-valign':'bottom','text-margin-y':4,'text-wrap':'wrap','text-max-width':'88px','width':26,'height':26,'border-width':2,'border-color':'rgba(255,255,255,.25)'}},
+      {selector:'node[t="agenda"]',style:{'background-color':'#ffffff','border-color':'#00d8ff','border-width':3,'color':'#bfe9ff','width':34,'height':34}},
+      {selector:'node.hub',style:{'width':56,'height':56,'border-width':4,'border-color':'#00d8ff','background-color':'#ffffff'}},
+      {selector:'node.sel',style:{'border-color':'#86ff00','border-width':4}},
+      {selector:'edge',style:{'width':1.6,'curve-style':'bezier','target-arrow-shape':'triangle','arrow-scale':0.8,'opacity':0.75,
+        'line-color':e=>GCOL[e.data('t')]||'#64748b','target-arrow-color':e=>GCOL[e.data('t')]||'#64748b'}},
+      {selector:'edge[t="flow"]',style:{'line-color':'#86ff00','target-arrow-color':'#86ff00','line-style':'dashed'}},
     ],
-    layout:{name:'concentric', minNodeSpacing:34} });
-  cy.on('tap','node', e=>{ const t=e.target.data('t'); const id=e.target.id();
-    if (t==='agenda'||t==='agenda2'){ cy.elements().remove(); cy.add(egoElements(id)); cy.layout({name:'concentric',minNodeSpacing:34}).run(); }
-    else { location.hash = '#/'+routeOf(id)+'/'+encodeURIComponent(id); }
-  });
-  byId('gsearch').addEventListener('input', e=>{
-    const q=e.target.value.toLowerCase(); if(q.length<3) return;
-    const hit = agendyRows.find(a=>a.nazev.toLowerCase().includes(q));
-    if(hit){ cy.elements().remove(); cy.add(egoElements(hit.id)); cy.layout({name:'concentric',minNodeSpacing:34}).run(); }
-  });
+    layout:{name:'preset'} });
+  const have=new Set(), expanded=new Set();
+  function node(id,t){ if(have.has(id))return; have.add(id); cy.add({data:{id,label:(nameOf(id)||id).slice(0,46),t:t||typeOf(id)}}); }
+  function edge(s,t,kind){ const id=s+'~'+t; if(cy.getElementById(id).nonempty())return; if(!have.has(s)||!have.has(t))return; cy.add({data:{id,source:s,target:t,t:kind}}); }
+  async function expand(id){
+    if(expanded.has(id))return; expanded.add(id);
+    if(id.startsWith('agenda/')){ const a=agMap[id]; if(!a)return;
+      a.isvs.slice(0,10).forEach(x=>{node(x,'isvs');edge(id,x,'isvs');});
+      sluzby.filter(s=>s.agenda===id).slice(0,8).forEach(s=>{node(s.id,'sluzba');edge(id,s.id,'sluzba');});
+      (a.ovm_sample||[]).slice(0,10).forEach(x=>{node(x,'ovm');edge(id,x,'ovm');});
+      opr.filter(o=>o.z===id).slice(0,8).forEach(o=>{node(o.do,'agenda');edge(id,o.do,'flow');});
+      opr.filter(o=>o.do===id).slice(0,8).forEach(o=>{node(o.z,'agenda');edge(o.z,id,'flow');});
+    } else if(id.startsWith('isvs/')){ const i=isvsMap[id]; if(!i)return;
+      (i.agendy||[]).slice(0,12).forEach(x=>{node(x,'agenda');edge(x,id,'isvs');});
+    } else if(id.startsWith('orgán')){ if(!ovmMap){ovmMap=Object.fromEntries((await load('ovm')).map(o=>[o.id,o]));}
+      const o=ovmMap[id]; if(!o)return; (o.agendy_sample||[]).slice(0,12).forEach(x=>{node(x,'agenda');edge(x,id,'ovm');});
+    } else if(id.startsWith('služba/')){ const s=sluzby.find(s=>s.id===id);
+      if(s&&s.agenda){node(s.agenda,'agenda');edge(s.agenda,s.id,'sluzba');} }
+  }
+  function relayout(){ cy.layout({name:'cose',animate:true,animationDuration:500,idealEdgeLength:95,nodeRepulsion:9000,edgeElasticity:120,gravity:0.3,padding:36,randomize:false}).run(); }
+  function updateSel(id){ cy.nodes().removeClass('sel'); cy.getElementById(id).addClass('sel');
+    byId('gseldetail').innerHTML=`<b>${esc(nameOf(id))}</b> &nbsp;<a class="link" href="#/${routeOf(id)}/${encodeURIComponent(id)}">otevřít detail →</a>`; }
+  async function reset(centerId){ cy.elements().remove(); have.clear(); expanded.clear();
+    node(centerId); await expand(centerId); cy.getElementById(centerId).addClass('hub'); relayout(); updateSel(centerId); }
+  cy.on('tap','node', async e=>{ const id=e.target.id(); await expand(id); cy.nodes().removeClass('hub'); e.target.addClass('hub'); relayout(); updateSel(id); });
+  byId('greset').addEventListener('click',()=>reset(start));
+  let t; byId('gsearch').addEventListener('input', e=>{ clearTimeout(t); t=setTimeout(()=>{ const q=e.target.value.toLowerCase(); if(q.length<3)return; const hit=agendyRows.find(a=>a.nazev.toLowerCase().includes(q)); if(hit) reset(hit.id); },300); });
+  await reset(start);
 }
 
 /* ---------- DOPADY & KASKÁDY ---------- */
@@ -516,12 +535,14 @@ async function dopady(arg){
     const src = k==='1'? sys.id : null;
     els.push({data:{id:sys.id+'-'+a, source:k==='1'?sys.id:sys.id, target:a}});
   }));
-  cytoscape({ container:byId('cyd'), elements:els,
+  byId('cyd').style.background='radial-gradient(circle at 50% 42%, #112c57, #060f24)';
+  byId('cyd').style.borderColor='#0c1f44';
+  cytoscape({ container:byId('cyd'), elements:els, wheelSensitivity:0.2,
     style:[
-      {selector:'node',style:{'background-color':e=>ocol[e.data('o')],'label':'data(label)','font-size':'9px','color':'#0a1730','text-wrap':'wrap','text-max-width':'80px','width':e=>e.data('o')===0?46:24,'height':e=>e.data('o')===0?46:24,'text-valign':'bottom','text-margin-y':3}},
-      {selector:'edge',style:{'width':1.2,'line-color':'#e2a0a0','curve-style':'bezier','target-arrow-shape':'triangle','target-arrow-color':'#e2a0a0','arrow-scale':0.7}},
+      {selector:'node',style:{'background-color':e=>ocol[e.data('o')],'label':'data(label)','font-size':'10px','font-weight':600,'color':'#eaf2ff','text-outline-width':2.5,'text-outline-color':'#06122b','text-wrap':'wrap','text-max-width':'82px','width':e=>e.data('o')===0?54:26,'height':e=>e.data('o')===0?54:26,'text-valign':'bottom','text-margin-y':4,'border-width':2,'border-color':'rgba(255,255,255,.25)'}},
+      {selector:'edge',style:{'width':1.4,'line-color':'rgba(255,120,120,.6)','curve-style':'bezier','target-arrow-shape':'triangle','target-arrow-color':'rgba(255,120,120,.6)','arrow-scale':0.8}},
     ],
-    layout:{name:'concentric', concentric:n=>3-(n.data('o')), levelWidth:()=>1, minNodeSpacing:30} })
+    layout:{name:'concentric', concentric:n=>3-(n.data('o')), levelWidth:()=>1, minNodeSpacing:38} })
     .on('tap','node',e=>{ const id=e.target.id(); const rt=routeOf(id); if(rt) location.hash='#/'+rt+'/'+encodeURIComponent(id); });
 }
 
