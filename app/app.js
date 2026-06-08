@@ -783,4 +783,11 @@ byId('exportbtn').addEventListener('click', ()=>{
   a.href=url; a.download=(ex.name||'export')+'.csv'; a.click(); URL.revokeObjectURL(url);
 });
 
+/* logout: clear unlock + return to gate */
+(function(){ var b=byId('logoutbtn'); if(b) b.addEventListener('click', function(){
+  try{ localStorage.removeItem('rpp_access'); }catch(e){}
+  if(window.gtag) gtag('event','logout');
+  location.reload();
+}); })();
+
 if (!window.__locked) render();
