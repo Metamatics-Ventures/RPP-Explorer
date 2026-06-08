@@ -700,23 +700,20 @@ async function hledat(arg){
 /* ---------- ABOUT ---------- */
 async function about(){
   const m = await load('meta'); const c=m.counts;
-  const members = [
-    ['Tomáš Vejlupek','Iniciátor konceptu kGovernment, facilitace','competitive intelligence (TOVEK)'],
-    ['Jakub Bareš','Výkonný předseda iniciativy, strategie','agentní AI (Metamatics / Complexity)'],
-    ['Petr Kučera','Cloudové služby a krizové systémy · zdroj dat RPP','enterprise architecture (Power Patterns)'],
-    ['Vladimír Rohel','Kyberbezpečnost, procesy veřejné správy','Rada AFCEA ČR (NAKIT)'],
-    ['Jaroslav Pejčoch','Krizové řízení a legislativa · místopředseda PS07','krizové systémy (T-SOFT)'],
-    ['Vladislav Severa','AI agenti, agentní architektury, KPI státu','autonomní AI agenti (knowdroids.ai)'],
-    ['Martin Vlasta','Legal tech, právní aspekty AI','Advokátní asociace pro AI'],
-    ['Pavel Maděra','Kyberbezpečnost, krizové řízení',''],
-    ['Dominik Regner','Datová analytika pro vyšetřovací složky','(Cogniware)'],
-    ['Filip Kasabov','Bezpečnostní operace (SOC / CSIRT)',''],
-    ['Miroslav Nečas','Organizační podpora, bezpečnostní scénáře',''],
-    ['Tomáš Pokorný','IT a bezpečnost, data-driven rozhodování',''],
-  ];
-  view.innerHTML = `<div class="pagehdr"><div><h1>O projektu</h1><div class="sub">Průzkumník a znalostní vrstva nad českým Registrem práv a povinností</div></div></div>
+  const domains = ['Kyberbezpečnost','Krizové řízení a legislativa','Agentní AI a datová analytika','Cloud a enterprise architektura','Legal tech / právo AI','Bezpečnostní operace (SOC/CSIRT)'];
+  view.innerHTML = `<div class="pagehdr"><div><h1>O projektu <span class="badge warn">zkušební verze</span></h1><div class="sub">Průzkumník nad českým Registrem práv a povinností (RPP)</div></div></div>
+   <div class="card" style="border-left:4px solid var(--warn);background:#fffdf7">
+     <h2>⚠ Zkušební verze — důležité upozornění</h2>
+     <p class="small" style="line-height:1.7;margin-bottom:10px">Jedná se o <b>zkušební (testovací) verzi jedné z aplikací projektu kGovernment</b>, který realizuje pracovní skupina <a class="link" href="https://afcea.cz/o-nas-ps07/" target="_blank" rel="noopener">AFCEA Intelligence</a>.</p>
+     <p class="small" style="line-height:1.7;margin-bottom:10px">Aplikace vychází <b>výhradně z veřejně dostupných otevřených dat (open data) z Registru práv a povinností</b>, která spravuje a publikuje Digitální a informační agentura (DIA). Nepoužíváme žádná neveřejná ani osobní data.</p>
+     <p class="small" style="line-height:1.7;margin-bottom:6px">Cílem této zkušební verze je:</p>
+     <ol class="small" style="line-height:1.7;margin:0 0 0 18px">
+       <li>v prvé řadě <b>ověřit, zda vyvinutá prezentace informací skutečně odpovídá analyzovaným datům</b>; a</li>
+       <li>v druhé řadě <b>poskytnout široké odborné veřejnosti příležitost zapojit se do diskuse o správnosti a úplnosti těchto dat</b>.</li>
+     </ol>
+   </div>
    <div class="card"><h2>Z čeho vychází</h2>
-     <p class="muted small" style="line-height:1.6">Aplikace pracuje s veřejnými open daty RPP, která spravuje Digitální a informační agentura (DIA). Stažena je kompletní datová sada (56 souborů) a přerestrukturalizována do propojené databáze.</p>
+     <p class="muted small" style="line-height:1.6">Pouze veřejná <b>open data RPP</b> (správce DIA). Stažena kompletní datová sada (56 souborů) a přerestrukturalizována do propojené databáze. Žádná neveřejná data.</p>
      <div class="kpis" style="margin-top:14px">
        <div class="kpi"><div class="v">${fmt(c.agendy)}</div><div class="l">agend</div></div>
        <div class="kpi"><div class="v">${fmt(c.isvs)}</div><div class="l">systémů</div></div>
@@ -725,22 +722,23 @@ async function about(){
        <div class="kpi"><div class="v">${fmt(c.opravneni)}</div><div class="l">oprávnění</div></div>
        <div class="kpi"><div class="v">${fmt(c.pusobnost)}</div><div class="l">vazeb</div></div>
      </div>
-     <p class="small muted" style="margin-top:10px">Zdroj: <a class="link" href="https://rpp-opendata.egon.gov.cz/odrpp/datovasada/" target="_blank">rpp-opendata.egon.gov.cz</a> (DIA)</p>
+     <p class="small muted" style="margin-top:10px">Zdroj: <a class="link" href="https://rpp-opendata.egon.gov.cz/odrpp/datovasada/" target="_blank" rel="noopener">rpp-opendata.egon.gov.cz</a> (DIA)</p>
    </div>
    <div class="grid2">
-     <div class="card" style="background:linear-gradient(135deg,#0a1f44,#0e2a5c);color:#fff">
-       <h2 style="color:#fff">Metamatics Ventures</h2>
-       <p style="color:#bcd0ef;line-height:1.6;font-size:13px">Venture studio zaměřené na <b style="color:#7ef0ff">agentní umělou inteligenci</b> a aplikovanou inteligenci. RPP Explorer navrhuje a vyvíjí jako příspěvek k datově řízené veřejné správě v ČR — od ETL nad veřejnými registry přes grafové modely vazeb po analytické nástroje.</p>
-       <p class="small" style="margin-top:10px"><a class="link" style="color:#7ef0ff" href="https://metamatics.ventures" target="_blank">metamatics.ventures</a></p>
+     <div class="card"><h2>Pracovní skupina AFCEA Intelligence (kGovernment)</h2>
+       <p class="muted small" style="line-height:1.6">AFCEA Česká pobočka propojuje veřejnou správu, armádu, akademii a soukromý sektor v oblasti ICT a bezpečnosti. Pracovní skupina rozvíjí koncept „knowledge government" — datově a znalostně řízeného státu — a spolupracuje s Centrem pro informovanou společnost (CIS).</p>
+       <p class="small muted" style="margin-top:8px">Skupina sdružuje odborníky z oblastí:</p>
+       <div style="margin-top:6px">${domains.map(d=>`<span class="chip">${esc(d)}</span>`).join('')}</div>
+       <p class="small muted" style="margin-top:10px"><a class="link" href="https://afcea.cz/o-nas-ps07/" target="_blank" rel="noopener">afcea.cz — pracovní skupina</a></p>
      </div>
-     <div class="card"><h2>Pracovní skupina PS07 kGovernment (AFCEA ČR)</h2>
-       <p class="muted small" style="line-height:1.6">AFCEA Česká pobočka propojuje veřejnou správu, armádu, akademii a soukromý sektor v oblasti ICT a bezpečnosti. Skupina PS07 kGovernment rozvíjí koncept „knowledge government" — datově a znalostně řízeného státu — a spolupracuje s Centrem pro informovanou společnost (CIS).</p>
-       <p class="small muted" style="margin-top:8px"><a class="link" href="https://afcea.cz/o-nas-ps07/" target="_blank">afcea.cz — PS07</a></p>
+     <div class="card" style="background:linear-gradient(135deg,#0a1f44,#0e2a5c);color:#fff">
+       <h2 style="color:#fff">Vývoj &amp; realizace</h2>
+       <p style="color:#bcd0ef;line-height:1.6;font-size:13px">Aplikaci vyvíjí <b style="color:#7ef0ff">Metamatics Ventures</b> — studio zaměřené na agentní umělou inteligenci a aplikovanou inteligenci — jako příspěvek k datově řízené veřejné správě: od ETL nad veřejnými registry přes grafové modely vazeb po analytické nástroje.</p>
+       <p class="small" style="margin-top:10px"><a class="link" style="color:#7ef0ff" href="https://metamatics.ventures" target="_blank" rel="noopener">metamatics.ventures</a></p>
      </div>
    </div>
-   <div class="card"><h2>Členové pracovní skupiny</h2>
-     <div class="grid3">${members.map(mb=>`<div style="border:1px solid var(--line);border-radius:12px;padding:14px"><div style="font-weight:700">${esc(mb[0])}</div><div class="small muted" style="margin-top:3px">${esc(mb[1])}</div>${mb[2]?`<div class="small" style="color:var(--neon-violet);margin-top:4px">${esc(mb[2])}</div>`:''}</div>`).join('')}</div>
-     <p class="small muted" style="margin-top:10px">Členové s veřejně známou odborností. Aktuální oficiální složení viz web AFCEA.</p>
+   <div class="card"><h2>Připomínky k datům</h2>
+     <p class="small muted" style="line-height:1.6">Našli jste nesoulad mezi zobrazením a daty, nebo nepřesnost v samotných datech RPP? Budeme rádi za zpětnou vazbu — právě ověření správnosti a úplnosti dat je smyslem této zkušební verze.</p>
    </div>`;
 }
 
