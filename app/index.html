@@ -15,9 +15,54 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="app.css">
+<style>
+  #gate{position:fixed;inset:0;z-index:2000;background:radial-gradient(1100px 760px at 76% -18%, #16386f, #060f24 62%);color:#fff;overflow:auto;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  #gate .gwrap{max-width:1060px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;padding:7vh 30px}
+  #gate .glogo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:18px;margin-bottom:34px}
+  #gate .glogo i{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#00d8ff,#7c5cff);display:flex;align-items:center;justify-content:center;color:#04132b;font-style:normal;font-size:20px;box-shadow:0 0 18px rgba(0,216,255,.5)}
+  #gate .geyebrow{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:#7fb0ff;font-weight:700;margin-bottom:20px}
+  #gate h1{font-size:clamp(44px,8.6vw,104px);font-weight:800;line-height:.98;letter-spacing:-.03em;margin-bottom:26px}
+  #gate .grad{background:linear-gradient(100deg,#00d8ff,#7c5cff 58%,#ff2d8d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #gate .glead{font-size:clamp(15px,1.55vw,19px);line-height:1.62;color:#c2d4f0;max-width:700px;margin-bottom:36px}
+  #gate .gstats{display:flex;gap:38px;flex-wrap:wrap;margin-bottom:42px}
+  #gate .gstats b{font-size:clamp(24px,3vw,34px);font-weight:800;display:block;letter-spacing:-.02em}
+  #gate .gstats span{font-size:11.5px;color:#6f8bbd;text-transform:uppercase;letter-spacing:.1em}
+  #gate .gform{display:flex;gap:10px;max-width:480px;flex-wrap:wrap}
+  #gate input{flex:1;min-width:220px;padding:15px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:16px;outline:none;transition:.15s}
+  #gate input::placeholder{color:#7e97c4}
+  #gate input:focus{border-color:#00d8ff;box-shadow:0 0 0 1px #00d8ff,0 0 24px rgba(0,216,255,.35)}
+  #gate button{padding:15px 26px;border:0;border-radius:14px;background:linear-gradient(135deg,#00d8ff,#7c5cff);color:#04132b;font-weight:800;font-size:15px;cursor:pointer;transition:.15s}
+  #gate button:hover{box-shadow:0 0 28px rgba(0,216,255,.55)}
+  #gate .gerr{display:none;color:#ff9db5;margin-top:13px;font-size:13.5px;font-weight:600}
+  #gate .gfoot{margin-top:46px;color:#5f7bb0;font-size:12px;line-height:1.6}
+  #gate.shake{animation:gsh .42s}
+  @keyframes gsh{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+  body.locked{overflow:hidden}
+</style>
 <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
 </head>
 <body>
+  <div id="gate">
+    <div class="gwrap">
+      <div class="glogo"><i>⬢</i> RPP Explorer</div>
+      <div class="geyebrow">AFCEA Intelligence · projekt kGovernment · zkušební verze</div>
+      <h1>Stát jako<br><span class="grad">propojená data.</span></h1>
+      <p class="glead">Zkušební aplikace pracovní skupiny <b>AFCEA Intelligence</b>. Prozkoumává český <b>Registr práv a povinností</b> — agendy, úřady, informační systémy, služby a jejich vzájemné vazby — a staví nad nimi znalostní vrstvu pro datově řízený stát. Vychází výhradně z veřejně dostupných otevřených dat.</p>
+      <div class="gstats">
+        <div><b>406</b><span>agend</span></div>
+        <div><b>12 110</b><span>systémů</span></div>
+        <div><b>19 555</b><span>úřadů</span></div>
+        <div><b>9 607</b><span>služeb</span></div>
+        <div><b>910 668</b><span>vazeb</span></div>
+      </div>
+      <form id="gateform" class="gform">
+        <input id="gatepw" type="password" placeholder="Heslo pro vstup" autocomplete="off" autofocus>
+        <button type="submit">Vstoupit →</button>
+      </form>
+      <div id="gateerr" class="gerr">Nesprávné heslo. Zkuste to prosím znovu.</div>
+      <div class="gfoot">Zdroj: veřejná otevřená data Registru práv a povinností (DIA) · realizuje pracovní skupina AFCEA Intelligence · vyvíjí Metamatics Ventures</div>
+    </div>
+  </div>
   <aside class="side">
     <div class="brand"><div class="logo">⬢</div><div>RPP&nbsp;Explorer<small>zkušební verze · open data RPP</small></div></div>
     <div class="navsec">Přehled</div>
@@ -59,6 +104,28 @@
     <main class="content" id="view"><div class="loading"><span class="spin"></span>Načítám…</div></main>
   </div>
 
+  <script>
+  (function(){
+    var KEY='rpp_access', gate=document.getElementById('gate');
+    window.__locked = localStorage.getItem(KEY)!=='1';
+    if(!window.__locked){ gate.style.display='none'; }
+    else { document.body.classList.add('locked'); }
+    document.getElementById('gateform').addEventListener('submit', function(e){
+      e.preventDefault();
+      var v=(document.getElementById('gatepw').value||'').trim().toLowerCase();
+      if(v==='kgovernment'){
+        localStorage.setItem(KEY,'1'); window.__locked=false;
+        gate.style.display='none'; document.body.classList.remove('locked');
+        if(window.gtag) gtag('event','unlock');
+        if(typeof render==='function') render();
+      } else {
+        var er=document.getElementById('gateerr'); er.style.display='block';
+        var pw=document.getElementById('gatepw'); pw.value=''; pw.focus();
+        gate.classList.add('shake'); setTimeout(function(){gate.classList.remove('shake');},440);
+      }
+    });
+  })();
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

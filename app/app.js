@@ -783,4 +783,4 @@ byId('exportbtn').addEventListener('click', ()=>{
   a.href=url; a.download=(ex.name||'export')+'.csv'; a.click(); URL.revokeObjectURL(url);
 });
 
-render();
+if (!window.__locked) render();
