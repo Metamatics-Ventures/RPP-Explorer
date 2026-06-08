@@ -739,6 +739,7 @@ async function about(){
    </div>
    <div class="card"><h2>Připomínky k datům</h2>
      <p class="small muted" style="line-height:1.6">Našli jste nesoulad mezi zobrazením a daty, nebo nepřesnost v samotných datech RPP? Budeme rádi za zpětnou vazbu — právě ověření správnosti a úplnosti dat je smyslem této zkušební verze.</p>
+     <p class="small" style="margin-top:10px">Kontakt: <a class="link" href="mailto:ps07@afcea.cz">ps07@afcea.cz</a></p>
    </div>`;
 }
 
