@@ -155,7 +155,39 @@ async function dashboard(){
          ${Object.entries(m.sluzby_typ).map(([k,v])=>bar(k.trim()||'Neuvedeno',v,Math.max(...Object.values(m.sluzby_typ)),'pink')).join('')}
        </div>
      </div>
+   </div>
+   <div class="card" id="instcard" style="margin-top:14px">
+     <h2>Orgány veřejné moci podle typu instituce <span class="badge grey" id="insttot">…</span>
+       <span style="float:right;font-weight:400"><select class="dbsel" id="insttypsel"><option value="">Typ instituce: vše</option></select></span></h2>
+     <div class="desc">Filtruj instituce podle typu — města, obce, úřady, ministerstva, kraje… Klikni na typ pro otevření filtrovaného seznamu v databázi, nebo vyber typ a vyfiltruj žebříček nejzapojenějších úřadů.</div>
+     <div class="grid2" style="margin-top:10px">
+       <div><div class="desc" style="font-weight:700;color:var(--ink);margin-bottom:4px">Rozložení podle typu</div><div id="instbreak"><div class="loading"><span class="spin"></span>Načítám orgány…</div></div></div>
+       <div><div class="desc" style="font-weight:700;color:var(--ink);margin-bottom:4px">Nejvíce zapojené úřady <span class="small muted">dle počtu agend</span></div><div id="insttop"></div></div>
+     </div>
    </div>`;
+  // progresivní doplnění (OVM je velký dataset — načítáme až po vykreslení dashboardu)
+  ensureOvmTypes().then(ovm=>{
+    if (!byId('instbreak')) return;   // uživatel mezitím odešel jinam
+    const byType = {}; for (const o of ovm){ byType[o._typ] = (byType[o._typ]||0)+1; }
+    const types = OVM_TYPES.filter(t=>byType[t]);
+    const maxC = Math.max(...types.map(t=>byType[t]));
+    byId('insttot').textContent = fmt(ovm.length)+' orgánů';
+    byId('insttypsel').innerHTML = '<option value="">Typ instituce: vše</option>' +
+      types.map(t=>`<option value="${esc(t)}">${esc(t)} (${fmt(byType[t])})</option>`).join('');
+    byId('instbreak').innerHTML = types.map(t=>
+      `<div class="bar tight"><div class="lbl"><a class="link" href="#/databaze/ovm~${encodeURIComponent(t)}" title="otevřít v databázi">${esc(t)}</a></div><div class="track"><div class="fill" style="width:${Math.round(byType[t]/maxC*100)}%"></div></div><div class="val">${fmt(byType[t])}</div></div>`).join('');
+    function drawTop(typ){
+      let list = typ ? ovm.filter(o=>o._typ===typ) : ovm;
+      list = list.slice().sort((a,b)=>((b.c&&b.c.agend)||0)-((a.c&&a.c.agend)||0)).slice(0,12);
+      byId('insttop').innerHTML = table(list, [
+        {h:'Úřad', render:o=>link(o.id, o.nazev)},
+        {h:'Typ', render:o=>`<span class="chip">${esc(o._typ)}</span>`},
+        {h:'Agend', cls:'right', render:o=>fmt((o.c&&o.c.agend)||0)},
+      ]);
+    }
+    drawTop('');
+    byId('insttypsel').addEventListener('change', e=>drawTop(e.target.value));
+  }).catch(()=>{ if (byId('instbreak')) byId('instbreak').innerHTML='<div class="empty">Orgány se nepodařilo načíst.</div>'; });
 }
 
 /* ---------- AGENDY ---------- */
@@ -180,7 +212,8 @@ async function agendaDetail(a, rows){
   const sluzby = await load('sluzby');
   const aServices = sluzby.filter(s=>s.agenda===a.id);
   const opr = await load('opravneni');
-  const oin = opr.filter(o=>o['do']===a.id), oout = opr.filter(o=>o['z']===a.id);
+  // tok: z-agendy (zdroj, dává) → do-agendy (příjemce, bere)
+  const bere = opr.filter(o=>o['do']===a.id), dava = opr.filter(o=>o['z']===a.id);
   view.innerHTML = `
     <div class="crumb"><a href="#/dashboard">Dashboard</a> › <a href="#/agendy">Agendy</a> › ${esc(a.kod)}</div>
     <div class="ehdr">
@@ -225,10 +258,10 @@ async function agendaDetail(a, rows){
       <div>
         <div class="card"><h2>Toky údajů</h2>
           <div class="desc">Oprávnění mezi agendami (princip only-once)</div>
-          <div class="kv"><span>Čte z jiných agend</span><b>${fmt(oout.length)}</b></div>
-          ${oout.slice(0,8).map(o=>`<div class="kv"><span>← čte</span><b>${link(o['do'])}</b></div>`).join('')}
-          <div class="kv" style="margin-top:6px"><span>Jiné agendy čtou odsud</span><b>${fmt(oin.length)}</b></div>
-          ${oin.slice(0,8).map(o=>`<div class="kv"><span>→ dává</span><b>${link(o['z'])}</b></div>`).join('')}
+          <div class="kv"><span>Bere z jiných agend</span><b>${fmt(bere.length)}</b></div>
+          ${bere.slice(0,8).map(o=>`<div class="kv"><span>← bere z</span><b>${link(o['z'])}</b></div>`).join('')}
+          <div class="kv" style="margin-top:6px"><span>Dává jiným agendám</span><b>${fmt(dava.length)}</b></div>
+          ${dava.slice(0,8).map(o=>`<div class="kv"><span>→ dává</span><b>${link(o['do'])}</b></div>`).join('')}
         </div>
         <div class="card"><h2>Vykonávající orgány <span class="badge grey">${fmt(a.c.ovm)}</span></h2>
           <div class="desc">${a.c.ovm>a.ovm_sample.length?`zobrazeno ${a.ovm_sample.length} z ${fmt(a.c.ovm)}`:''}</div>
@@ -410,9 +443,9 @@ async function opravneni(arg){
     searchText:r=>nameOf(r['z'])+' '+nameOf(r['do']),
     filters:[{label:'Referenční rozhraní', values:['ano','ne'], test:(r,v)=>r.ref===(v==='ano')}],
     cols:[
-      {h:'Čtenář (z agendy)',render:r=>link(r['z'])},
-      {h:'→',render:()=>'<span class="muted">čte od →</span>'},
-      {h:'Zdroj (do agendy)',render:r=>link(r['do'])},
+      {h:'Zdroj (dává) – z agendy',render:r=>link(r['z'])},
+      {h:'→',render:()=>'<span class="muted">dává →</span>'},
+      {h:'Příjemce (bere) – do agendy',render:r=>link(r['do'])},
       {h:'Údajů',cls:'right',render:r=>fmt(r.pocet_udaju)},
       {h:'Přístup',render:r=>(r.rw||[]).map(x=>`<span class="badge ${x==='W'?'pink':'cyan'}">${esc(x)}</span>`).join(' ')||'—'},
       {h:'Ref.',render:r=>r.ref?'<span class="badge ok">ano</span>':'<span class="badge grey">ne</span>'},
@@ -499,11 +532,12 @@ async function dopady(arg){
   await ensureNames(); const isvsRows = await load('isvs'); const agendyRows = await load('agendy');
   const opr = await load('opravneni');
   const agById = Object.fromEntries(agendyRows.map(a=>[a.id,a]));
-  const readers = {}; opr.forEach(o=>{ if(o['do']&&o['z']){ (readers[o['do']]=readers[o['do']]||[]).push(o['z']); }}); // zdroj -> [čtenáři]
+  // zdroj (z) → [příjemci (do), kteří od něj berou]; výpadek zdroje zasáhne jeho příjemce
+  const dependents = {}; opr.forEach(o=>{ if(o['do']&&o['z']){ (dependents[o['z']]=dependents[o['z']]||[]).push(o['do']); }});
   // default: a foundational system — supports few agendas, but ones that many others read from (base register)
   let defId;
   if (!arg){
-    const topAg = agendyRows.reduce((b,a)=>a.c.opr_in>b.c.opr_in?a:b, agendyRows[0]);
+    const topAg = agendyRows.reduce((b,a)=>a.c.opr_out>b.c.opr_out?a:b, agendyRows[0]);
     const cand = isvsRows.filter(i=>(i.agendy||[]).includes(topAg.id) && i.c.agend>=1 && i.c.agend<=15).sort((a,b)=>a.c.agend-b.c.agend);
     defId = (cand[0] || isvsRows.filter(i=>i.c.agend>=1 && i.c.agend<=6)[0] || isvsRows[0]).id;
   }
@@ -513,7 +547,7 @@ async function dopady(arg){
   let depth = Math.min(Math.max(window.__dDepth||3,1),7);
   view.innerHTML = `
     <div class="pagehdr"><div><h1>Dopady &amp; kaskády <span class="badge bad">domeček z karet</span></h1>
-      <div class="sub">Simulace výpadku systému a propagace přes oprávnění (agenda čte data z dotčené agendy). Vyber, kolik řádů kaskády zobrazit.</div></div></div>
+      <div class="sub">Simulace výpadku systému a propagace přes oprávnění (zasažená agenda přestane dávat data agendám, které od ní berou). Vyber, kolik řádů kaskády zobrazit.</div></div></div>
     <div class="card"><div class="toolbar">
       <span class="muted small">Co vypadne (systém):</span>
       <select id="dsel" class="grow">${options}</select>
@@ -537,7 +571,7 @@ async function dopady(arg){
     let frontier=(sys.agendy||[]).slice(), used=Math.min(1,depth);
     for(let d=2; d<=depth; d++){
       const next=[];
-      frontier.forEach(ag=>{ (readers[ag]||[]).forEach(z=>{ if(order[z]==null){ order[z]=d; parent[z]=ag; next.push(z);} }); });
+      frontier.forEach(ag=>{ (dependents[ag]||[]).forEach(c=>{ if(order[c]==null){ order[c]=d; parent[c]=ag; next.push(c);} }); });
       if(!next.length) break; frontier=next; used=d;
     }
     const impacted=Object.keys(order);
@@ -743,8 +777,299 @@ async function about(){
    </div>`;
 }
 
+/* ---------- Typologie institucí (OVM) ---------- */
+/* Přátelská kategorizace orgánů veřejné moci: města, obce, úřady, ministerstva… */
+const OVM_TYPES = ['Ministerstva','Kraje','Města a městyse','Obce','Městské části','Úřady (státní správa)','Soudy a st. zastupitelství','Organizační složky státu','Příspěvkové organizace','Školy a univerzity','Komory a prof. samospráva','Zdravotní pojišťovny','Podniky a firmy','Ostatní','Neurčeno'];
+function ovmType(o){
+  const n=(o.nazev||''); const f=(o.forma||''); const nl=n.toLowerCase(); const fl=f.toLowerCase();
+  if (/^ministerstvo/i.test(n)) return 'Ministerstva';
+  if (f==='Kraj' || /^krajský úřad/i.test(n)) return 'Kraje';
+  if (/soud|státní zastupitelství/i.test(nl)) return 'Soudy a st. zastupitelství';
+  if (f==='Obec' || f==='Městská část, městský obvod' || /^dobrovolný svazek obcí/i.test(n)){
+    if (f==='Městská část, městský obvod' || /městská část|městský obvod/i.test(nl)) return 'Městské části';
+    if (/^(statutární město|hlavní město|město |městys)/i.test(nl)) return 'Města a městyse';
+    return 'Obce';
+  }
+  if (/úřad/i.test(nl)) return 'Úřady (státní správa)';
+  if (/vysoká škola|univerzit|školská/i.test(fl+' '+nl) || /^(základní škola|střední škola|gymnázium|mateřsk|vyšší odborn|konzervatoř)/i.test(n)) return 'Školy a univerzity';
+  if (/pojišťovna/i.test(fl+' '+nl)) return 'Zdravotní pojišťovny';
+  if (/komora|stavovská|profesní/i.test(fl)) return 'Komory a prof. samospráva';
+  if (/^příspěvková organizace|^státní příspěvková organizace/i.test(f)) return 'Příspěvkové organizace';
+  if (f==='Organizační složka státu') return 'Organizační složky státu';
+  if (/ručením omezeným|akciová společnost|obchodní společnost|podnikající fyzická|komanditní|odštěpný závod|státní podnik|národní podnik/i.test(fl)) return 'Podniky a firmy';
+  if (!f) return 'Neurčeno';
+  return 'Ostatní';
+}
+let _ovmTyped = false;
+async function ensureOvmTypes(){
+  const rows = await load('ovm');
+  if (!_ovmTyped){ for (const o of rows) o._typ = ovmType(o); _ovmTyped = true; }
+  return rows;
+}
+
+/* ---------- DATABÁZE · prohlížeč a kontrola kvality dat ---------- */
+/* Pohled pro kolegu: surové propojené tabulky, fill-rate sloupců a kontrola
+   referenční integrity (cizí klíče mířící na neexistující entitu). */
+const DB_TABLES = {
+  agendy: { label:'Agendy', file:'agendy', sub:'Agendy veřejné správy', searchText:r=>r.nazev+' '+r.kod+' '+r.id, fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'kod',h:'Kód',kind:'mono',req:true},
+    {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'ohlasovatel',h:'Ohlašovatel',kind:'fk',ref:'ovm',req:true},
+    {k:'stanovisko_sluzby',h:'Stanov. služby',kind:'enum'},
+    {k:'stanovisko_udaje',h:'Stanov. údaje',kind:'enum'},
+    {k:'platnost_od',h:'Platnost od',kind:'text'},
+    {k:'isvs',h:'ISVS',kind:'arrfk',ref:'isvs'},
+    {k:'sluzby_ids',h:'Služby',kind:'arrfk',ref:'sluzba'},
+    {k:'ovm_sample',h:'OVM (vzorek)',kind:'arrfk',ref:'ovm'},
+  ]},
+  isvs: { label:'Systémy (ISVS)', file:'isvs', sub:'Informační systémy veřejné správy', searchText:r=>r.nazev+' '+r.ident+' '+(r.spravce_nazev||''), fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'ident',h:'Ident',kind:'mono'},
+    {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'spravce',h:'Správce',kind:'fk',ref:'ovm',req:true},
+    {k:'bezuroven',h:'Bezp. úroveň',kind:'enum'},
+    {k:'umisteni',h:'Umístění',kind:'enum'},
+    {k:'etapa',h:'Etapa',kind:'enum'},
+    {k:'sdileni',h:'Sdílení',kind:'enum'},
+    {k:'vyuziti',h:'Využití',kind:'enum'},
+    {k:'agendy',h:'Agendy',kind:'arrfk',ref:'agenda'},
+  ]},
+  ovm: { label:'Orgány (OVM)', file:'ovm', sub:'Orgány veřejné moci', searchText:r=>r.nazev+' '+r.ico+' '+(r.forma||''), fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'ico',h:'IČO',kind:'mono',req:true},
+    {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_typ',h:'Typ instituce',kind:'enum'},
+    {k:'forma',h:'Forma',kind:'enum'},
+    {k:'kategorie',h:'Kategorie',kind:'arrtext'},
+    {k:'ds',h:'Dat. schránka',kind:'bool'},
+    {k:'vnitrni',h:'Vnitřní',kind:'bool'},
+    {k:'agendy_sample',h:'Agendy (vzorek)',kind:'arrfk',ref:'agenda'},
+  ]},
+  sluzby: { label:'Služby', file:'sluzby', sub:'Služby veřejné správy', searchText:r=>r.nazev+' '+r.ident, fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'ident',h:'Ident',kind:'mono'},
+    {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
+    {k:'typ',h:'Typ',kind:'enum'},
+    {k:'klienti',h:'Klienti',kind:'arrtext'},
+    {k:'poskytovatel',h:'Poskytovatel',kind:'mono'},
+    {k:'ukony',h:'Úkonů',kind:'num'},
+  ]},
+  udaje: { label:'Údaje', file:'udaje', sub:'Objekty/subjekty údajů a jejich položky', searchText:r=>r.nazev+' '+r.kod, fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'kod',h:'Kód',kind:'mono',req:true},
+    {k:'nazev',h:'Název',kind:'text',req:true},
+    {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
+    {k:'popis',h:'Popis',kind:'longtext'},
+    {k:'udaje',h:'Položek',kind:'arrcount'},
+  ]},
+  opravneni: { label:'Oprávnění', file:'opravneni', sub:'Oprávnění k přístupu k údajům (toky mezi agendami)', searchText:r=>r.kod+' '+r.id, fields:[
+    {k:'id',h:'ID',kind:'mono',req:true},
+    {k:'kod',h:'Kód',kind:'mono',req:true},
+    {k:'z',h:'Z agendy',kind:'fk',ref:'agenda',req:true},
+    {k:'do',h:'Do agendy',kind:'fk',ref:'agenda',req:true},
+    {k:'typ',h:'Typ',kind:'longtext'},
+    {k:'pocet_udaju',h:'Počet údajů',kind:'num'},
+    {k:'rw',h:'R/W',kind:'arrtext'},
+    {k:'ref',h:'Ref',kind:'bool'},
+  ]},
+};
+const DB_REF_FILE = {ovm:'ovm', isvs:'isvs', agenda:'agendy', sluzba:'sluzby'};
+const DB_REFSETS = {};
+async function dbRefSet(ref){
+  if (DB_REFSETS[ref]) return DB_REFSETS[ref];
+  const rows = await load(DB_REF_FILE[ref]);
+  const s = new Set(); for (const r of rows) s.add(r.id);
+  DB_REFSETS[ref] = s; return s;
+}
+const dbEmpty = v => v==null || v==='' || (Array.isArray(v) && v.length===0);
+function dbTrunc(s, n){ s=String(s); return s.length>n ? esc(s.slice(0,n))+'…' : esc(s); }
+/* one cell -> {html, issue:null|'missing'|'broken'} */
+function dbCell(f, r, refsets){
+  const v = r[f.k];
+  if (dbEmpty(v)){
+    if (f.req) return {html:'<span class="qmiss">— chybí —</span>', issue:'missing'};
+    return {html:'<span class="qnull">∅</span>', issue:null};
+  }
+  switch(f.kind){
+    case 'self': return {html: link(r.id, v), issue:null};
+    case 'fk': {
+      const set = refsets[f.ref];
+      if (set && !set.has(v)) return {html:`<span class="qbroken" title="cíl neexistuje v tabulce ${f.ref}">${dbTrunc(nameOf(v)||v,40)} ⚠</span>`, issue:'broken'};
+      return {html: link(v), issue:null};
+    }
+    case 'arrfk': {
+      const set = refsets[f.ref];
+      const broken = set ? v.filter(x=>!set.has(x)).length : 0;
+      const head = v.slice(0,2).map(x=>link(x)).join(', ');
+      const rest = v.length>2 ? ` <span class="chip">+${fmt(v.length-2)}</span>` : '';
+      const warn = broken ? ` <span class="badge bad" title="neplatné odkazy">${broken} ⚠</span>` : '';
+      return {html: head+rest+warn, issue: broken?'broken':null};
+    }
+    case 'arrcount': return {html:`<span class="chip">${fmt(v.length)}×</span>`, issue:null};
+    case 'arrtext': return {html: v.slice(0,4).map(x=>`<span class="chip">${esc(String(x).trim())}</span>`).join('')+(v.length>4?` <span class="chip">+${fmt(v.length-4)}</span>`:''), issue:null};
+    case 'bool': return {html: v ? '<span class="badge ok">ano</span>' : '<span class="badge grey">ne</span>', issue:null};
+    case 'num': return {html: fmt(v), issue:null};
+    case 'longtext': return {html: dbTrunc(v,70), issue:null};
+    case 'mono': return {html: `<span class="mono">${esc(v)}</span>`, issue:null};
+    default: return {html: dbTrunc(v,60), issue:null};
+  }
+}
+/* per-field fill rate + broken-ref counts over the WHOLE dataset */
+function dbStats(rows, fields, refsets){
+  return fields.map(f=>{
+    let filled=0, broken=0;
+    for (const r of rows){
+      const v = r[f.k];
+      if (!dbEmpty(v)) filled++;
+      if (!dbEmpty(v)){
+        if (f.kind==='fk' && refsets[f.ref] && !refsets[f.ref].has(v)) broken++;
+        else if (f.kind==='arrfk' && refsets[f.ref]) broken += v.filter(x=>!refsets[f.ref].has(x)).length;
+      }
+    }
+    return {f, filled, total:rows.length, broken};
+  });
+}
+function dbRowIssues(r, fields, refsets){
+  let miss=0, brk=0;
+  for (const f of fields){
+    const c = dbCell(f, r, refsets);
+    if (c.issue==='missing') miss++; else if (c.issue==='broken') brk++;
+  }
+  return {miss, brk, bad: miss>0||brk>0};
+}
+async function databaze(arg){
+  await ensureNames();
+  const meta = await load('meta');
+  const tabN = {agendy:meta.counts.agendy, isvs:meta.counts.isvs, ovm:meta.counts.ovm, sluzby:meta.counts.sluzby, udaje:meta.counts.udaje_objekty, opravneni:meta.counts.opravneni};
+  // arg může nést přednastavený filtr: "ovm~Obce" → tabulka ovm, filtr Typ instituce = Obce
+  let aKey = arg, preFilter = null;
+  if (aKey && aKey.includes('~')){ const p = aKey.split('~'); aKey = p[0]; preFilter = decodeURIComponent(p.slice(1).join('~')); }
+  const key = (aKey && DB_TABLES[aKey]) ? aKey : 'agendy';
+  const spec = DB_TABLES[key];
+  const rows = await load(spec.file);
+  if (key==='ovm') await ensureOvmTypes();   // doplní _typ (typ instituce)
+  // valid-id sets only for refs this table uses
+  const refs = [...new Set(spec.fields.filter(f=>f.ref).map(f=>f.ref))];
+  const refsets = {};
+  await Promise.all(refs.map(async rf => { refsets[rf] = await dbRefSet(rf); }));
+
+  const stats = dbStats(rows, spec.fields, refsets);
+  const totalBroken = stats.reduce((a,s)=>a+s.broken,0);
+  const reqStats = stats.filter(s=>s.f.req);
+  const missingReq = reqStats.reduce((a,s)=>a+(s.total-s.filled),0);
+
+  // per-column filters for enum & bool sloupce (+ sentinel pro prázdné hodnoty)
+  const FILTER_KINDS = new Set(['enum','bool']);
+  const filterOpts = spec.fields.filter(f=>FILTER_KINDS.has(f.kind)).map(f=>{
+    const vals = new Set(); let hasEmpty=false;
+    for (const r of rows){ const v=r[f.k];
+      if (dbEmpty(v)){ hasEmpty=true; continue; }
+      vals.add(f.kind==='bool' ? (v?'ano':'ne') : String(v));
+    }
+    return { f, values:[...vals].sort((a,b)=>a.localeCompare(b,'cs')), hasEmpty };
+  });
+
+  const tabs = Object.entries(DB_TABLES).map(([k,t])=>
+    `<a class="dbtab ${k===key?'active':''}" href="#/databaze/${k}">${esc(t.label)} <span class="n">${fmt(tabN[k]||'')}</span></a>`).join('');
+
+  view.innerHTML = `
+    <div class="pagehdr"><div><h1>Databáze · kontrola kvality</h1>
+      <div class="sub">Surové propojené tabulky pro revizi dat · klikací cizí klíče · fill-rate sloupců · referenční integrita</div></div>
+      <a class="btn" id="dbexport">↗ Export CSV</a></div>
+    <div class="dbtabs">${tabs}</div>
+    <div class="card">
+      <h2>${esc(spec.label)} <span class="badge grey">${fmt(rows.length)} řádků</span></h2>
+      <div class="desc">${esc(spec.sub)}</div>
+      <div class="qhealth">
+        <div class="qh"><b>${fmt(rows.length)}</b>řádků</div>
+        <div class="qh"><b>${fmt(spec.fields.length)}</b>sloupců</div>
+        <div class="qh"><b class="${missingReq?'bad':'ok'}">${fmt(missingReq)}</b>chybějících povinných</div>
+        <div class="qh"><b class="${totalBroken?'bad':'ok'}">${fmt(totalBroken)}</b>neplatných odkazů (FK)</div>
+      </div>
+      <div class="qsum">
+        ${stats.map(s=>{
+          const pct = s.total ? Math.round(s.filled/s.total*100) : 0;
+          const cls = pct>=99?'lime':pct>=70?'':pct>=30?'pink':'grey';
+          const brk = s.broken ? ` <span class="badge bad">${fmt(s.broken)} ⚠</span>` : '';
+          const req = s.f.req ? ' <span class="badge cyan">povinné</span>' : '';
+          return `<div class="bar tight"><div class="lbl">${esc(s.f.h)}${req}</div><div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div><div class="val">${pct}%${brk}</div></div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="toolbar">
+      <input class="grow" id="dbq" placeholder="Hledat v tabulce ${esc(spec.label).toLowerCase()}…">
+      ${filterOpts.map(o=>`<select data-col="${esc(o.f.k)}"><option value="">${esc(o.f.h)}: vše</option>${o.hasEmpty?'<option value="__EMPTY__">⊘ (prázdné)</option>':''}${o.values.map(v=>`<option value="${esc(v)}">${esc(v.trim()||v)}</option>`).join('')}</select>`).join('')}
+      <label class="tg"><input type="checkbox" id="dbprob"> jen řádky s problémem</label>
+      <button class="btn" id="dbclear">✕ Vyčistit</button>
+      <span class="count" id="dbc"></span>
+    </div>
+    <div class="dbgrid" id="dbgrid"></div>
+    <div style="text-align:center;margin-top:14px"><button class="btn" id="dbmore" style="display:none">Načíst dalších 100</button></div>`;
+
+  const state = { q:'', limit:100, prob:false, col:{} };
+  if (preFilter && filterOpts.some(o=>o.f.k==='_typ')){
+    state.col['_typ'] = preFilter;
+    const s = view.querySelector('.toolbar select[data-col="_typ"]'); if (s) s.value = preFilter;
+  }
+  function filtered(){
+    let out = rows;
+    const q = state.q.trim().toLowerCase();
+    if (q) out = out.filter(r => spec.searchText(r).toLowerCase().includes(q));
+    for (const o of filterOpts){
+      const sel = state.col[o.f.k]; if (!sel) continue;
+      const k = o.f.k;
+      if (sel==='__EMPTY__') out = out.filter(r => dbEmpty(r[k]));
+      else if (o.f.kind==='bool') out = out.filter(r => (r[k]?'ano':'ne')===sel);
+      else out = out.filter(r => String(r[k])===sel);
+    }
+    if (state.prob) out = out.filter(r => dbRowIssues(r, spec.fields, refsets).bad);
+    return out;
+  }
+  function gridHTML(shown){
+    if (!shown.length) return '<div class="empty">Nic nenalezeno.</div>';
+    const head = '<tr>'+spec.fields.map(f=>`<th>${esc(f.h)}</th>`).join('')+'</tr>';
+    const body = shown.map(r=>{
+      const cells = spec.fields.map(f=>dbCell(f, r, refsets));
+      const bad = cells.some(c=>c.issue);
+      return `<tr class="${bad?'qbadrow':''}">`+cells.map(c=>`<td>${c.html}</td>`).join('')+'</tr>';
+    }).join('');
+    return `<div class="tablewrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  }
+  function draw(){
+    const f = filtered();
+    const shown = f.slice(0, state.limit);
+    byId('dbgrid').innerHTML = gridHTML(shown);
+    byId('dbc').textContent = `${fmt(f.length)} z ${fmt(rows.length)} řádků` + (f.length>shown.length?` · zobrazeno ${fmt(shown.length)}`:'');
+    byId('dbmore').style.display = f.length > state.limit ? '' : 'none';
+    // CSV export of the current filtered view (flattened)
+    window.__dbexport = { name:'databaze-'+key, fields:spec.fields, rows:f };
+  }
+  byId('dbq').addEventListener('input', e=>{ state.q=e.target.value; state.limit=100; draw(); });
+  byId('dbprob').addEventListener('change', e=>{ state.prob=e.target.checked; state.limit=100; draw(); });
+  view.querySelectorAll('.toolbar select[data-col]').forEach(s=>s.addEventListener('change', e=>{ state.col[e.target.dataset.col]=e.target.value; state.limit=100; draw(); }));
+  byId('dbclear').addEventListener('click', ()=>{
+    state.q=''; state.prob=false; state.col={}; state.limit=100;
+    byId('dbq').value=''; byId('dbprob').checked=false;
+    view.querySelectorAll('.toolbar select[data-col]').forEach(s=>s.value='');
+    draw();
+  });
+  byId('dbmore').addEventListener('click', ()=>{ state.limit+=100; draw(); });
+  byId('dbexport').addEventListener('click', ()=>{
+    const ex = window.__dbexport; if (!ex) return;
+    const flat = v => Array.isArray(v) ? v.join(' | ') : (v==null?'':String(v));
+    const head = ex.fields.map(f=>`"${f.h}"`).join(',');
+    const body = ex.rows.slice(0,20000).map(r=>ex.fields.map(f=>`"${flat(r[f.k]).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob(['﻿'+head+'\n'+body], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=ex.name+'.csv'; a.click(); URL.revokeObjectURL(url);
+  });
+  draw();
+}
+
 /* ---------- ROUTER ---------- */
-const ROUTES = {dashboard,agendy,ovm,isvs,sluzby,udaje,opravneni,graf,dopady,analytika,srovnani,hledat,about};
+const ROUTES = {dashboard,agendy,ovm,isvs,sluzby,udaje,opravneni,graf,dopady,analytika,srovnani,hledat,about,databaze};
 function parseHash(){
   const h = location.hash.replace(/^#\//,'') || 'dashboard';
   const parts = h.split('/');

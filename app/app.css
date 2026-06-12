@@ -122,6 +122,24 @@ a.link:hover{color:var(--neon-pink);text-decoration:underline}
 .bar .fill.grey{background:#cbd5e1}
 .bar .val{width:64px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:12px}
 
+/* ---- Srovnání agend ---- */
+.cmpsel{display:flex;flex-direction:column;gap:10px}
+.cmprow{display:flex;align-items:center;gap:10px}
+.cmprow .cmpdot{flex:0 0 14px;width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 0 8px rgba(0,0,0,.12)}
+.cmprow select{flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fff;outline:none}
+.cmprow select:focus{border-color:var(--neon-cyan);box-shadow:var(--glow)}
+.cmprow .btnx{flex:0 0 auto;width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:18px;line-height:1;color:var(--muted);cursor:pointer}
+.cmprow .btnx:hover{border-color:var(--neon-pink);color:var(--neon-pink)}
+.cmpgrid{margin-top:20px;display:grid;gap:22px}
+.cmpmetric{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fbfcfe}
+.cmptitle{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:12px}
+.cmpbar{display:flex;align-items:center;gap:14px;margin:11px 0;font-size:14px}
+.cmpbar .lbl{width:230px;color:var(--ink);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmpbar .track{flex:1;height:24px;background:#eef2f7;border-radius:8px;overflow:hidden}
+.cmpbar .fill{height:100%;border-radius:8px;transition:width .4s ease}
+.cmpbar .val{width:72px;text-align:right;font-variant-numeric:tabular-nums;font-weight:800;font-size:15px}
+@media(max-width:640px){.cmpbar .lbl{width:120px}}
+
 /* donut */
 .cov{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .donut{width:128px;height:128px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
@@ -151,3 +169,27 @@ a.link:hover{color:var(--neon-pink);text-decoration:underline}
 .muted{color:var(--muted)} .small{font-size:11.5px}
 .searchgroup{margin-bottom:18px}
 .searchgroup h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+
+/* ---------- DATABÁZE · kontrola kvality dat ---------- */
+.dbtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.dbtab{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:11px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;display:inline-flex;gap:8px;align-items:center;transition:.15s}
+.dbtab:hover{border-color:#cdd6e4}
+.dbtab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dbtab .n{font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
+.dbtab.active .n{opacity:.85}
+.qsum{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px 24px;margin-top:4px}
+.qbadrow{background:#fff7f7 !important}
+.qmiss{color:#b91c1c;font-weight:700;font-size:11px;white-space:nowrap}
+.qnull{color:#cbd5e1;font-weight:700}
+.qbroken{color:#b45309;font-weight:600;white-space:nowrap}
+.dbgrid table td{vertical-align:top;font-size:12.5px}
+.dbgrid table th{white-space:nowrap}
+.qhealth{display:flex;gap:26px;flex-wrap:wrap;margin:2px 0 6px}
+.qhealth .qh{font-size:12px;color:var(--muted)}
+.qhealth .qh b{display:block;font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.qhealth .qh b.warn{color:#b45309}.qhealth .qh b.bad{color:#b91c1c}.qhealth .qh b.ok{color:#047857}
+.toolbar label.tg{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);cursor:pointer;user-select:none}
+.bar.tight{margin:4px 0}.bar.tight .lbl{width:140px}.bar.tight .val{width:88px}
+select.dbsel{padding:7px 11px;border:1px solid var(--line);border-radius:9px;font-size:12.5px;background:#fff;color:var(--ink);outline:none;max-width:240px}
+select.dbsel:focus{border-color:var(--neon-cyan);box-shadow:var(--glow)}
+#instcard h2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
