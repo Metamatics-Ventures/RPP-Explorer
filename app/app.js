@@ -8,12 +8,18 @@ const NAMES = {};
 const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = n => (n == null ? '' : Number(n).toLocaleString('cs-CZ'));
 const byId = i => document.getElementById(i);
+const _loading = {};
 async function load(name){
   if (DATA[name]) return DATA[name];
-  const r = await fetch('data/' + name + '.json');
-  if (!r.ok) throw new Error('Nelze načíst ' + name);
-  DATA[name] = await r.json();
-  return DATA[name];
+  if (_loading[name]) return _loading[name];   // sdílej probíhající fetch (jinak vznikne víc instancí pole a tagy se ztratí)
+  _loading[name] = (async ()=>{
+    const r = await fetch('data/' + name + '.json');
+    if (!r.ok) throw new Error('Nelze načíst ' + name);
+    DATA[name] = await r.json();
+    return DATA[name];
+  })();
+  _loading[name].catch(()=>{ delete _loading[name]; });   // selhání → umožni další pokus
+  return _loading[name];
 }
 async function ensureNames(){
   if (NAMES._loaded) return;
@@ -928,6 +934,7 @@ const _catTagged = {};
 async function ensureCategories(key){
   const rows = await load(key);
   if (_catTagged[key]) return rows;
+  if (key==='ovm'){ await ensureOvmTypes(); _catTagged[key]=true; return rows; }   // typ instituce řeší ensureOvmTypes
   if (key==='agendy'){ await ensureAgendaMeta(); _catTagged[key]=true; return rows; }
   if (key==='isvs'){
     const ovm = await ensureOvmTypes(); const om = {}; for (const o of ovm) om[o.id] = o._typ;
@@ -1219,8 +1226,156 @@ async function databaze(arg){
   draw();
 }
 
+/* ---------- SQL DOTAZY · spojování tabulek + hledání z jazyka do SQL ---------- */
+/* Klientská SQLite (sql.js / WASM) nad RPP daty. Umožní JOINovat tabulky a
+   překládá českou otázku do SQL (heuristika, výsledné SQL je editovatelné). */
+const SQL_TABLES = {
+  agendy: { desc:'Agendy', cols:[['id','TEXT'],['kod','TEXT'],['nazev','TEXT'],['ohlasovatel','TEXT'],['kategorie','TEXT'],['zakon','TEXT'],['dulezitost','TEXT'],['stanovisko_sluzby','TEXT'],['stanovisko_udaje','TEXT'],['platnost_od','TEXT'],['pocet_isvs','INT'],['pocet_sluzby','INT'],['pocet_ovm','INT'],['pocet_cinnosti','INT']],
+    val:r=>[r.id,r.kod,r.nazev,r.ohlasovatel,r._kat,r._zakon,r._dulezitost,r.stanovisko_sluzby,r.stanovisko_udaje,r.platnost_od,(r.c&&r.c.isvs)||0,(r.c&&r.c.sluzby)||0,(r.c&&r.c.ovm)||0,(r.c&&r.c.cinnosti)||0] },
+  isvs: { desc:'Informační systémy', cols:[['id','TEXT'],['ident','TEXT'],['nazev','TEXT'],['spravce','TEXT'],['spravce_nazev','TEXT'],['spravce_typ','TEXT'],['bezuroven','TEXT'],['umisteni','TEXT'],['etapa','TEXT'],['sdileni','TEXT'],['vyuziti','TEXT'],['dulezitost','TEXT'],['pocet_agend','INT']],
+    val:r=>[r.id,r.ident,r.nazev,r.spravce,r.spravce_nazev,r._spravce_typ,r.bezuroven,r.umisteni,r.etapa,r.sdileni,r.vyuziti,r._dulezitost,(r.c&&r.c.agend)||0] },
+  ovm: { desc:'Orgány veřejné moci', cols:[['id','TEXT'],['ico','TEXT'],['nazev','TEXT'],['typ','TEXT'],['forma','TEXT'],['dulezitost','TEXT'],['ds','INT'],['vnitrni','INT'],['pocet_agend','INT'],['pocet_isvs','INT']],
+    val:r=>[r.id,r.ico,r.nazev,r._typ,r.forma,r._dulezitost,r.ds?1:0,r.vnitrni?1:0,(r.c&&r.c.agend)||0,(r.c&&r.c.isvs)||0] },
+  sluzby: { desc:'Služby', cols:[['id','TEXT'],['ident','TEXT'],['nazev','TEXT'],['agenda','TEXT'],['kategorie','TEXT'],['typ','TEXT'],['poskytovatel','TEXT'],['dulezitost','TEXT'],['ukony','INT']],
+    val:r=>[r.id,r.ident,r.nazev,r.agenda,r._kat,(r.typ||'').trim(),r.poskytovatel,r._dulezitost,r.ukony||0] },
+  udaje: { desc:'Objekty údajů', cols:[['id','TEXT'],['kod','TEXT'],['nazev','TEXT'],['agenda','TEXT'],['kategorie','TEXT'],['dulezitost','TEXT'],['pocet_polozek','INT']],
+    val:r=>[r.id,r.kod,r.nazev,r.agenda,r._kat,r._dulezitost,(r.udaje||[]).length] },
+  opravneni: { desc:'Oprávnění / toky údajů', cols:[['id','TEXT'],['kod','TEXT'],['z_agenda','TEXT'],['do_agenda','TEXT'],['kategorie','TEXT'],['dulezitost','TEXT'],['pocet_udaju','INT'],['ref','INT']],
+    val:r=>[r.id,r.kod,r['z'],r['do'],r._kat,r._dulezitost,r.pocet_udaju||0,r.ref?1:0] },
+};
+const SQL_EXAMPLES = [
+  ['Systémy a jejich správci (JOIN)', "SELECT i.nazev AS system, o.nazev AS spravce, o.typ AS typ_spravce\nFROM isvs i JOIN ovm o ON i.spravce = o.id\nLIMIT 200;"],
+  ['Počet systémů podle typu správce', "SELECT o.typ AS typ_spravce, COUNT(*) AS pocet_systemu\nFROM isvs i JOIN ovm o ON i.spravce = o.id\nGROUP BY o.typ ORDER BY pocet_systemu DESC;"],
+  ['Služby v kritických agendách', "SELECT s.nazev AS sluzba, a.nazev AS agenda, a.kategorie\nFROM sluzby s JOIN agendy a ON s.agenda = a.id\nWHERE a.dulezitost = 'Kritická'\nLIMIT 200;"],
+  ['Toky údajů mezi agendami', "SELECT az.nazev AS z_agendy, ad.nazev AS do_agendy, p.pocet_udaju\nFROM opravneni p\nJOIN agendy az ON p.z_agenda = az.id\nJOIN agendy ad ON p.do_agenda = ad.id\nORDER BY p.pocet_udaju DESC LIMIT 200;"],
+  ['Agendy bez navázané služby', "SELECT kod, nazev, kategorie FROM agendy WHERE pocet_sluzby = 0;"],
+  ['ISVS bez bezpečnostní úrovně', "SELECT nazev, spravce_nazev FROM isvs\nWHERE bezuroven IS NULL OR bezuroven = '' LIMIT 200;"],
+  ['Kolik agend spravuje ministerstvo (JOIN)', "SELECT o.nazev AS ministerstvo, o.pocet_agend\nFROM ovm o WHERE o.typ = 'Ministerstva'\nORDER BY o.pocet_agend DESC;"],
+];
+let _sqlDb = null, _sqlBuilding = null;
+function loadSqlJs(){
+  const base = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
+  return new Promise((res,rej)=>{
+    const init = ()=> window.initSqlJs({locateFile:f=>base+f}).then(res,rej);
+    if (window.initSqlJs) return init();
+    const s=document.createElement('script'); s.src=base+'sql-wasm.js';
+    s.onload=init; s.onerror=()=>rej(new Error('Nepodařilo se načíst SQL engine (sql.js).'));
+    document.head.appendChild(s);
+  });
+}
+async function buildSqlDb(){
+  if (_sqlDb) return _sqlDb;
+  if (_sqlBuilding) return _sqlBuilding;
+  _sqlBuilding = (async ()=>{
+    const SQL = await loadSqlJs();
+    await Promise.all(['agendy','isvs','ovm','sluzby','udaje','opravneni'].flatMap(k=>[ensureImportance(k),ensureCategories(k)]).concat([ensureOvmTypes()]));
+    const db = new SQL.Database();
+    for (const [name,cfg] of Object.entries(SQL_TABLES)){
+      const rows = await load(name);
+      db.run(`CREATE TABLE ${name} (${cfg.cols.map(c=>'"'+c[0]+'" '+c[1]).join(', ')});`);
+      const ph = cfg.cols.map(()=>'?').join(',');
+      const stmt = db.prepare(`INSERT INTO ${name} VALUES (${ph})`);
+      db.run('BEGIN');
+      for (const r of rows){ stmt.run(cfg.val(r).map(v=>v===undefined?null:v)); }
+      db.run('COMMIT'); stmt.free();
+    }
+    _sqlDb = db; return db;
+  })();
+  return _sqlBuilding;
+}
+const deaccent = s => (s||'').normalize("NFD").replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function nl2sql(q){
+  const s = deaccent(q);
+  const has = (...ks)=>ks.some(k=>s.includes(deaccent(k)));
+  let table = 'agendy';
+  if (has('system','isvs')) table='isvs';
+  else if (has('organ','urad','ovm','instituc','ministerstv','obce','obec','mesto','mest','kraj')) table='ovm';
+  else if (has('sluzb','sluzeb')) table='sluzby';
+  else if (has('udaj')) table='udaje';
+  else if (has('opravnen','tok')) table='opravneni';
+  else if (has('agend')) table='agendy';
+  const where=[];
+  const hasKat = ['agendy','sluzby','udaje','opravneni'].includes(table);   // jen tyto tabulky mají sloupec kategorie
+  if (hasKat) for (const name of AGENDA_CAT_NAMES){ const key=deaccent(name).split(/[ ,]/)[0]; if (key.length>3 && s.includes(key)){ where.push(`kategorie = '${name.replace(/'/g,"''")}'`); break; } }
+  const typMap=[['ministerstv','Ministerstva'],['kraj','Kraje'],['mest','Města a městyse'],['obce','Obce'],['obec','Obce'],['urad','Úřady (státní správa)'],['soud','Soudy a st. zastupitelství'],['skol','Školy a univerzity']];
+  for (const [k,v] of typMap){ if (s.includes(k)){ if(table==='ovm') where.push(`typ = '${v}'`); else if(table==='isvs') where.push(`spravce_typ = '${v}'`); break; } }
+  if (has('bez bezpe','neuveden','chybi','prazdn') && (table==='isvs')) where.push(`(bezuroven IS NULL OR bezuroven = '')`);
+  else if (has('kritick')){ if(table==='isvs' && has('bezpe')) where.push(`bezuroven LIKE '%Kritická%'`); else where.push(`dulezitost = 'Kritická'`); }
+  else if (has('nejdulezit','vysok','dulezit')) where.push(`dulezitost IN ('Kritická','Vysoká')`);
+  if (has('cloud')) where.push(`umisteni LIKE '%cloud%'`);
+  const count = has('kolik','pocet','pocty');
+  const sel = count ? 'COUNT(*) AS pocet' : '*';
+  let sql = `SELECT ${sel} FROM ${table}`;
+  if (where.length) sql += '\nWHERE '+where.join(' AND ');
+  if (!count) sql += '\nLIMIT 200';
+  return sql+';';
+}
+function sqlCellRender(v){ if (v==null) return '<span class="qnull">∅</span>'; const s=String(v); if (s.includes('/') && routeOf(s)) return link(s); return esc(s); }
+function sqlResultHTML(res){
+  if (!res || !res.length) return '<div class="empty">Dotaz proběhl úspěšně · 0 řádků.</div>';
+  const {columns, values} = res[0];
+  const head = '<tr>'+columns.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr>';
+  const body = values.slice(0,500).map(row=>'<tr>'+row.map(v=>`<td>${sqlCellRender(v)}</td>`).join('')+'</tr>').join('');
+  return `<div class="count" style="margin-bottom:8px">${fmt(values.length)} řádků`+(values.length>500?' · zobrazeno prvních 500':'')+`</div><div class="tablewrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+async function dotazy(){
+  view.innerHTML = `
+    <div class="pagehdr"><div><h1>SQL dotazy · spojování tabulek</h1>
+      <div class="sub">Spojuj tabulky přes JOIN a ptej se česky — otázka se přeloží do SQL (engine sql.js běží ve tvém prohlížeči nad RPP daty)</div></div></div>
+    <div class="card" id="sqlcard"><div class="loading"><span class="spin"></span>Připravuji databázi (sql.js + RPP data)…</div></div>`;
+  let db;
+  try { db = await buildSqlDb(); }
+  catch(e){ byId('sqlcard').innerHTML = '<div class="empty">Chyba: '+esc(e.message)+'</div>'; return; }
+
+  const schemaHTML = Object.entries(SQL_TABLES).map(([n,c])=>
+    `<div style="margin-bottom:6px"><b class="mono">${n}</b> <span class="small muted">— ${esc(c.desc)}</span><br><span class="small mono muted">${c.cols.map(x=>x[0]).join(', ')}</span></div>`).join('');
+
+  byId('sqlcard').innerHTML = `
+    <div style="font-weight:700;margin-bottom:6px">Zeptej se česky</div>
+    <div class="toolbar">
+      <input class="grow" id="nlq" placeholder="např. kolik systémů spravují ministerstva · kritické agendy v kategorii daně · ISVS bez bezpečnostní úrovně">
+      <button class="btn neon" id="nlrun">Přeložit → SQL → spustit</button>
+    </div>
+    <div style="font-weight:700;margin:12px 0 6px">SQL dotaz <span class="small muted">(Ctrl+Enter spustí · můžeš upravit)</span></div>
+    <textarea id="sqlta" spellcheck="false" style="width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:11px;border:1px solid var(--line);border-radius:11px;outline:none;resize:vertical">SELECT i.nazev AS system, o.nazev AS spravce, o.typ AS typ_spravce
+FROM isvs i JOIN ovm o ON i.spravce = o.id
+LIMIT 200;</textarea>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="btn neon" id="sqlrun">▶ Spustit</button>
+      <button class="btn" id="sqlexport">↗ Export CSV</button>
+      <span class="count" id="sqlmsg"></span>
+    </div>
+    <div style="font-weight:700;margin:14px 0 6px">Příklady (klikni)</div>
+    <div class="dbtabs">${SQL_EXAMPLES.map((e,i)=>`<a class="dbtab" data-ex="${i}" href="javascript:void(0)">${esc(e[0])}</a>`).join('')}</div>
+    <details style="margin-top:14px"><summary class="small muted" style="cursor:pointer">Schéma tabulek a klíče pro JOIN</summary>
+      <div style="margin-top:8px">${schemaHTML}
+        <div class="small muted" style="margin-top:8px">Vazby: <span class="mono">isvs.spravce = ovm.id</span> · <span class="mono">sluzby.agenda = agendy.id</span> · <span class="mono">udaje.agenda = agendy.id</span> · <span class="mono">opravneni.z_agenda / do_agenda = agendy.id</span> · <span class="mono">agendy.ohlasovatel = ovm.id</span></div>
+      </div></details>
+    <div id="sqlout" style="margin-top:16px"></div>`;
+
+  function exec(){
+    const sql = byId('sqlta').value.trim(); if(!sql) return;
+    try { const res = db.exec(sql); byId('sqlout').innerHTML = sqlResultHTML(res);
+      window.__sqlres = res && res[0]; byId('sqlmsg').textContent='OK'; byId('sqlmsg').style.color='var(--muted)';
+    } catch(e){ byId('sqlout').innerHTML=''; byId('sqlmsg').textContent='Chyba: '+e.message; byId('sqlmsg').style.color='#b91c1c'; }
+  }
+  byId('sqlrun').addEventListener('click', exec);
+  byId('sqlta').addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); exec(); }});
+  byId('nlrun').addEventListener('click', ()=>{ const q=byId('nlq').value.trim(); if(!q) return; byId('sqlta').value=nl2sql(q); exec(); });
+  byId('nlq').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); byId('nlrun').click(); }});
+  view.querySelectorAll('[data-ex]').forEach(a=>a.addEventListener('click', ()=>{ byId('sqlta').value=SQL_EXAMPLES[+a.dataset.ex][1]; exec(); }));
+  byId('sqlexport').addEventListener('click', ()=>{
+    const r = window.__sqlres; if(!r){ alert('Nejdřív spusť dotaz s výsledkem.'); return; }
+    const head = r.columns.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',');
+    const body = r.values.map(row=>row.map(v=>`"${(v==null?'':String(v)).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob(['﻿'+head+'\n'+body],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='sql-vysledek.csv'; a.click(); URL.revokeObjectURL(url);
+  });
+  exec();   // spustí úvodní ukázkový JOIN
+}
+
 /* ---------- ROUTER ---------- */
-const ROUTES = {dashboard,agendy,ovm,isvs,sluzby,udaje,opravneni,graf,dopady,analytika,srovnani,hledat,about,databaze};
+const ROUTES = {dashboard,agendy,ovm,isvs,sluzby,udaje,opravneni,graf,dopady,analytika,srovnani,hledat,about,databaze,dotazy};
 function parseHash(){
   const h = location.hash.replace(/^#\//,'') || 'dashboard';
   const parts = h.split('/');
