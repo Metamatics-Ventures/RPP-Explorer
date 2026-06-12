@@ -195,11 +195,14 @@ async function agendy(arg){
   await ensureNames(); const rows = await load('agendy');
   if (arg) return agendaDetail(rows.find(a=>a.id===arg), rows);
   view.innerHTML = `<div class="pagehdr"><div><h1>Agendy</h1><div class="sub">${fmt(rows.length)} agend veřejné správy</div></div></div>`;
+  await ensureImportance('agendy');
   listPage({ rows, exportName:'agendy',
     searchText:r=>r.nazev+' '+r.kod,
+    filters:[dulFilter],
     cols:[
       {h:'Kód', cls:'mono', render:r=>esc(r.kod)},
       {h:'Název', render:r=>link(r.id, r.nazev)},
+      {h:'Důležitost', render:r=>badgeDul(r._dulezitost)},
       {h:'Ohlašovatel', render:r=>link(r.ohlasovatel)},
       {h:'Činností', cls:'right', render:r=>fmt(r.c.cinnosti)},
       {h:'ISVS', cls:'right', render:r=>fmt(r.c.isvs)},
@@ -282,16 +285,19 @@ async function isvs(arg){
   const umist = [...new Set(rows.map(r=>r.umisteni).filter(Boolean))];
   const sec = [...new Set(rows.map(r=>r.bezuroven).filter(Boolean))];
   const et = [...new Set(rows.map(r=>r.etapa).filter(Boolean))];
+  await ensureImportance('isvs');
   view.innerHTML = `<div class="pagehdr"><div><h1>Informační systémy (ISVS)</h1><div class="sub">${fmt(rows.length)} systémů · řazeno dle kritičnosti</div></div></div>`;
   listPage({ rows, exportName:'isvs',
     searchText:r=>r.nazev+' '+(r.spravce_nazev||''),
     filters:[
+      dulFilter,
       {label:'Bezpečnost', values:sec, test:(r,v)=>r.bezuroven===v},
       {label:'Umístění', values:umist, test:(r,v)=>r.umisteni===v},
       {label:'Etapa', values:et, test:(r,v)=>r.etapa===v},
     ],
     cols:[
       {h:'Název', render:r=>link(r.id, r.nazev)},
+      {h:'Důležitost', render:r=>badgeDul(r._dulezitost)},
       {h:'Správce', render:r=>esc(r.spravce_nazev||'—')},
       {h:'Bezpečnost', render:r=>badgeSec(r.bezuroven)},
       {h:'Umístění', render:r=>esc(r.umisteni||'—')},
@@ -335,13 +341,21 @@ async function isvsDetail(i){
 async function ovm(arg){
   await ensureNames(); const rows = await load('ovm');
   if (arg) return ovmDetail(rows.find(o=>o.id===arg));
+  await ensureOvmTypes(); await ensureImportance('ovm');
+  const typyPresent = OVM_TYPES.filter(t=>rows.some(r=>r._typ===t));
   view.innerHTML = `<div class="pagehdr"><div><h1>Orgány veřejné moci</h1><div class="sub">${fmt(rows.length)} orgánů · řazeno dle počtu agend</div></div></div>`;
   listPage({ rows, exportName:'ovm',
     searchText:r=>r.nazev+' '+(r.ico||''),
-    filters:[{label:'Datová schránka', values:['ano','ne'], test:(r,v)=>r.ds===(v==='ano')}],
+    filters:[
+      {label:'Typ instituce', values:typyPresent, test:(r,v)=>r._typ===v},
+      dulFilter,
+      {label:'Datová schránka', values:['ano','ne'], test:(r,v)=>r.ds===(v==='ano')},
+    ],
     cols:[
       {h:'IČO',cls:'mono',render:r=>esc(r.ico||'—')},
       {h:'Název',render:r=>link(r.id, r.nazev)},
+      {h:'Typ',render:r=>`<span class="chip">${esc(r._typ||'—')}</span>`},
+      {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Právní forma',render:r=>esc(r.forma||'—')},
       {h:'Agend',cls:'right',render:r=>fmt(r.c.agend)},
       {h:'ISVS',cls:'right',render:r=>fmt(r.c.isvs)},
@@ -379,13 +393,18 @@ async function sluzby(arg){
   await ensureNames(); const rows = await load('sluzby');
   if (arg) return sluzbaDetail(rows.find(s=>s.id===arg));
   const typy = [...new Set(rows.map(r=>(r.typ||'').trim()).filter(Boolean))];
+  await ensureImportance('sluzby');
   view.innerHTML = `<div class="pagehdr"><div><h1>Služby</h1><div class="sub">${fmt(rows.length)} služeb veřejné správy</div></div></div>`;
   listPage({ rows, exportName:'sluzby',
     searchText:r=>r.nazev,
-    filters:[{label:'Typ', values:typy, test:(r,v)=>(r.typ||'').trim()===v}],
+    filters:[
+      {label:'Typ', values:typy, test:(r,v)=>(r.typ||'').trim()===v},
+      dulFilter,
+    ],
     cols:[
       {h:'Služba',render:r=>link(r.id, r.nazev)},
       {h:'Agenda',render:r=>link(r.agenda)},
+      {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Typ',render:r=>esc((r.typ||'').trim()||'—')},
       {h:'Klienti',render:r=>(r.klienti||[]).map(k=>`<span class="chip">${esc(k)}</span>`).join('')},
       {h:'Úkonů',cls:'right',render:r=>fmt(r.ukony)},
@@ -408,12 +427,15 @@ async function sluzbaDetail(s){
 async function udaje(arg){
   await ensureNames(); const rows = await load('udaje');
   if (arg) return udajDetail(rows.find(u=>u.id===arg));
+  await ensureImportance('udaje');
   view.innerHTML = `<div class="pagehdr"><div><h1>Katalog údajů</h1><div class="sub">${fmt(rows.length)} objektů údajů</div></div></div>`;
   listPage({ rows, exportName:'udaje',
     searchText:r=>r.nazev+' '+r.kod,
+    filters:[dulFilter],
     cols:[
       {h:'Kód',cls:'mono',render:r=>esc(r.kod)},
       {h:'Objekt / subjekt',render:r=>link(r.id, r.nazev)},
+      {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Agenda',render:r=>link(r.agenda)},
       {h:'Údajů',cls:'right',render:r=>fmt((r.udaje||[]).length)},
     ]});
@@ -438,14 +460,19 @@ async function udajDetail(u){
 /* ---------- OPRÁVNĚNÍ / TOKY ---------- */
 async function opravneni(arg){
   await ensureNames(); const rows = await load('opravneni');
+  await ensureImportance('opravneni');
   view.innerHTML = `<div class="pagehdr"><div><h1>Oprávnění / Toky údajů</h1><div class="sub">${fmt(rows.length)} oprávnění mezi agendami (princip only-once)</div></div></div>`;
   listPage({ rows, exportName:'opravneni',
     searchText:r=>nameOf(r['z'])+' '+nameOf(r['do']),
-    filters:[{label:'Referenční rozhraní', values:['ano','ne'], test:(r,v)=>r.ref===(v==='ano')}],
+    filters:[
+      dulFilter,
+      {label:'Referenční rozhraní', values:['ano','ne'], test:(r,v)=>r.ref===(v==='ano')},
+    ],
     cols:[
       {h:'Zdroj (dává) – z agendy',render:r=>link(r['z'])},
       {h:'→',render:()=>'<span class="muted">dává →</span>'},
       {h:'Příjemce (bere) – do agendy',render:r=>link(r['do'])},
+      {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Údajů',cls:'right',render:r=>fmt(r.pocet_udaju)},
       {h:'Přístup',render:r=>(r.rw||[]).map(x=>`<span class="badge ${x==='W'?'pink':'cyan'}">${esc(x)}</span>`).join(' ')||'—'},
       {h:'Ref.',render:r=>r.ref?'<span class="badge ok">ano</span>':'<span class="badge grey">ne</span>'},
@@ -807,6 +834,40 @@ async function ensureOvmTypes(){
   return rows;
 }
 
+/* ---------- Důležitost entit (odvozená kritičnost dle propojení) ---------- */
+/* Každá entita dostane pásmo Kritická/Vysoká/Střední/Nízká podle toho, jak
+   silně je provázaná (kvantily skóre). Umožní filtrovat „podle důležitosti". */
+const IMPORTANCE = {
+  agendy:    r => (r.c ? (r.c.isvs||0)+(r.c.sluzby||0)+(r.c.ovm||0) : 0),
+  isvs:      r => (r.c ? (r.c.agend||0) : 0),
+  ovm:       r => (r.c ? (r.c.agend||0) : 0),
+  sluzby:    r => (r.ukony||0),
+  udaje:     r => ((r.udaje||[]).length),
+  opravneni: r => (r.pocet_udaju||0),
+};
+const DUL_ORDER = ['Kritická','Vysoká','Střední','Nízká'];
+const _impTagged = {};
+async function ensureImportance(key){
+  const rows = await load(key);
+  if (_impTagged[key]) return rows;
+  const score = IMPORTANCE[key]; if (!score){ _impTagged[key]=true; return rows; }
+  const sorted = rows.map(score).sort((a,b)=>a-b);
+  const n = sorted.length; const q = p => sorted[Math.min(n-1, Math.floor(p*(n-1)))];
+  const p95=q(0.95), p80=q(0.80), p45=q(0.45);
+  for (const r of rows){ const s = score(r); r._impscore = s;
+    r._dulezitost = (s<=0) ? 'Nízká'
+      : (s>=p95 && p95>0) ? 'Kritická'
+      : (s>=p80 && p80>0) ? 'Vysoká'
+      : (s>=p45 && p45>0) ? 'Střední' : 'Nízká';
+  }
+  _impTagged[key] = true; return rows;
+}
+function badgeDul(b){
+  const c = b==='Kritická'?'bad':b==='Vysoká'?'warn':b==='Střední'?'cyan':'grey';
+  return `<span class="badge ${c}">${esc(b||'—')}</span>`;
+}
+const dulFilter = { label:'Důležitost', values:DUL_ORDER, test:(r,v)=>r._dulezitost===v };
+
 /* ---------- DATABÁZE · prohlížeč a kontrola kvality dat ---------- */
 /* Pohled pro kolegu: surové propojené tabulky, fill-rate sloupců a kontrola
    referenční integrity (cizí klíče mířící na neexistující entitu). */
@@ -815,6 +876,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'ohlasovatel',h:'Ohlašovatel',kind:'fk',ref:'ovm',req:true},
     {k:'stanovisko_sluzby',h:'Stanov. služby',kind:'enum'},
     {k:'stanovisko_udaje',h:'Stanov. údaje',kind:'enum'},
@@ -827,6 +889,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'ident',h:'Ident',kind:'mono'},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'spravce',h:'Správce',kind:'fk',ref:'ovm',req:true},
     {k:'bezuroven',h:'Bezp. úroveň',kind:'enum'},
     {k:'umisteni',h:'Umístění',kind:'enum'},
@@ -840,6 +903,7 @@ const DB_TABLES = {
     {k:'ico',h:'IČO',kind:'mono',req:true},
     {k:'nazev',h:'Název',kind:'self',req:true},
     {k:'_typ',h:'Typ instituce',kind:'enum'},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'forma',h:'Forma',kind:'enum'},
     {k:'kategorie',h:'Kategorie',kind:'arrtext'},
     {k:'ds',h:'Dat. schránka',kind:'bool'},
@@ -850,6 +914,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'ident',h:'Ident',kind:'mono'},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
     {k:'typ',h:'Typ',kind:'enum'},
     {k:'klienti',h:'Klienti',kind:'arrtext'},
@@ -860,6 +925,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'nazev',h:'Název',kind:'text',req:true},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
     {k:'popis',h:'Popis',kind:'longtext'},
     {k:'udaje',h:'Položek',kind:'arrcount'},
@@ -869,6 +935,7 @@ const DB_TABLES = {
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'z',h:'Z agendy',kind:'fk',ref:'agenda',req:true},
     {k:'do',h:'Do agendy',kind:'fk',ref:'agenda',req:true},
+    {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'typ',h:'Typ',kind:'longtext'},
     {k:'pocet_udaju',h:'Počet údajů',kind:'num'},
     {k:'rw',h:'R/W',kind:'arrtext'},
@@ -892,6 +959,7 @@ function dbCell(f, r, refsets){
     if (f.req) return {html:'<span class="qmiss">— chybí —</span>', issue:'missing'};
     return {html:'<span class="qnull">∅</span>', issue:null};
   }
+  if (f.badge==='dul') return {html: badgeDul(v), issue:null};
   switch(f.kind){
     case 'self': return {html: link(r.id, v), issue:null};
     case 'fk': {
@@ -950,6 +1018,7 @@ async function databaze(arg){
   const spec = DB_TABLES[key];
   const rows = await load(spec.file);
   if (key==='ovm') await ensureOvmTypes();   // doplní _typ (typ instituce)
+  await ensureImportance(key);               // doplní _dulezitost (pásmo důležitosti)
   // valid-id sets only for refs this table uses
   const refs = [...new Set(spec.fields.filter(f=>f.ref).map(f=>f.ref))];
   const refsets = {};
@@ -968,7 +1037,10 @@ async function databaze(arg){
       if (dbEmpty(v)){ hasEmpty=true; continue; }
       vals.add(f.kind==='bool' ? (v?'ano':'ne') : String(v));
     }
-    return { f, values:[...vals].sort((a,b)=>a.localeCompare(b,'cs')), hasEmpty };
+    let values = [...vals];
+    if (f.order) values.sort((a,b)=>{ const ia=f.order.indexOf(a), ib=f.order.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
+    else values.sort((a,b)=>a.localeCompare(b,'cs'));
+    return { f, values, hasEmpty };
   });
 
   const tabs = Object.entries(DB_TABLES).map(([k,t])=>
