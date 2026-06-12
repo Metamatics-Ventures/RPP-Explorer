@@ -195,13 +195,18 @@ async function agendy(arg){
   await ensureNames(); const rows = await load('agendy');
   if (arg) return agendaDetail(rows.find(a=>a.id===arg), rows);
   view.innerHTML = `<div class="pagehdr"><div><h1>Agendy</h1><div class="sub">${fmt(rows.length)} agend veřejné správy</div></div></div>`;
-  await ensureImportance('agendy');
+  await ensureImportance('agendy'); await ensureCategories('agendy');
+  const agKat = AGENDA_CAT_NAMES.filter(c=>rows.some(r=>r._kat===c));
   listPage({ rows, exportName:'agendy',
-    searchText:r=>r.nazev+' '+r.kod,
-    filters:[dulFilter],
+    searchText:r=>r.nazev+' '+r.kod+' '+(r._zakon||''),
+    filters:[
+      {label:'Kategorie', values:agKat, test:(r,v)=>r._kat===v},
+      dulFilter,
+    ],
     cols:[
       {h:'Kód', cls:'mono', render:r=>esc(r.kod)},
       {h:'Název', render:r=>link(r.id, r.nazev)},
+      {h:'Kategorie', render:r=>`<span class="chip">${esc(r._kat||'—')}</span>`},
       {h:'Důležitost', render:r=>badgeDul(r._dulezitost)},
       {h:'Ohlašovatel', render:r=>link(r.ohlasovatel)},
       {h:'Činností', cls:'right', render:r=>fmt(r.c.cinnosti)},
@@ -285,11 +290,13 @@ async function isvs(arg){
   const umist = [...new Set(rows.map(r=>r.umisteni).filter(Boolean))];
   const sec = [...new Set(rows.map(r=>r.bezuroven).filter(Boolean))];
   const et = [...new Set(rows.map(r=>r.etapa).filter(Boolean))];
-  await ensureImportance('isvs');
+  await ensureImportance('isvs'); await ensureCategories('isvs');
+  const isTyp = OVM_TYPES.filter(t=>rows.some(r=>r._spravce_typ===t));
   view.innerHTML = `<div class="pagehdr"><div><h1>Informační systémy (ISVS)</h1><div class="sub">${fmt(rows.length)} systémů · řazeno dle kritičnosti</div></div></div>`;
   listPage({ rows, exportName:'isvs',
     searchText:r=>r.nazev+' '+(r.spravce_nazev||''),
     filters:[
+      {label:'Typ správce', values:isTyp, test:(r,v)=>r._spravce_typ===v},
       dulFilter,
       {label:'Bezpečnost', values:sec, test:(r,v)=>r.bezuroven===v},
       {label:'Umístění', values:umist, test:(r,v)=>r.umisteni===v},
@@ -297,6 +304,7 @@ async function isvs(arg){
     ],
     cols:[
       {h:'Název', render:r=>link(r.id, r.nazev)},
+      {h:'Typ správce', render:r=>`<span class="chip">${esc(r._spravce_typ||'—')}</span>`},
       {h:'Důležitost', render:r=>badgeDul(r._dulezitost)},
       {h:'Správce', render:r=>esc(r.spravce_nazev||'—')},
       {h:'Bezpečnost', render:r=>badgeSec(r.bezuroven)},
@@ -393,16 +401,19 @@ async function sluzby(arg){
   await ensureNames(); const rows = await load('sluzby');
   if (arg) return sluzbaDetail(rows.find(s=>s.id===arg));
   const typy = [...new Set(rows.map(r=>(r.typ||'').trim()).filter(Boolean))];
-  await ensureImportance('sluzby');
+  await ensureImportance('sluzby'); await ensureCategories('sluzby');
+  const slKat = AGENDA_CAT_NAMES.concat(['(bez agendy)']).filter(c=>rows.some(r=>r._kat===c));
   view.innerHTML = `<div class="pagehdr"><div><h1>Služby</h1><div class="sub">${fmt(rows.length)} služeb veřejné správy</div></div></div>`;
   listPage({ rows, exportName:'sluzby',
     searchText:r=>r.nazev,
     filters:[
+      {label:'Kategorie', values:slKat, test:(r,v)=>r._kat===v},
       {label:'Typ', values:typy, test:(r,v)=>(r.typ||'').trim()===v},
       dulFilter,
     ],
     cols:[
       {h:'Služba',render:r=>link(r.id, r.nazev)},
+      {h:'Kategorie',render:r=>`<span class="chip">${esc(r._kat||'—')}</span>`},
       {h:'Agenda',render:r=>link(r.agenda)},
       {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Typ',render:r=>esc((r.typ||'').trim()||'—')},
@@ -427,14 +438,19 @@ async function sluzbaDetail(s){
 async function udaje(arg){
   await ensureNames(); const rows = await load('udaje');
   if (arg) return udajDetail(rows.find(u=>u.id===arg));
-  await ensureImportance('udaje');
+  await ensureImportance('udaje'); await ensureCategories('udaje');
+  const udKat = AGENDA_CAT_NAMES.concat(['(bez agendy)']).filter(c=>rows.some(r=>r._kat===c));
   view.innerHTML = `<div class="pagehdr"><div><h1>Katalog údajů</h1><div class="sub">${fmt(rows.length)} objektů údajů</div></div></div>`;
   listPage({ rows, exportName:'udaje',
     searchText:r=>r.nazev+' '+r.kod,
-    filters:[dulFilter],
+    filters:[
+      {label:'Kategorie', values:udKat, test:(r,v)=>r._kat===v},
+      dulFilter,
+    ],
     cols:[
       {h:'Kód',cls:'mono',render:r=>esc(r.kod)},
       {h:'Objekt / subjekt',render:r=>link(r.id, r.nazev)},
+      {h:'Kategorie',render:r=>`<span class="chip">${esc(r._kat||'—')}</span>`},
       {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Agenda',render:r=>link(r.agenda)},
       {h:'Údajů',cls:'right',render:r=>fmt((r.udaje||[]).length)},
@@ -460,11 +476,13 @@ async function udajDetail(u){
 /* ---------- OPRÁVNĚNÍ / TOKY ---------- */
 async function opravneni(arg){
   await ensureNames(); const rows = await load('opravneni');
-  await ensureImportance('opravneni');
+  await ensureImportance('opravneni'); await ensureCategories('opravneni');
+  const opKat = AGENDA_CAT_NAMES.concat(['(bez agendy)']).filter(c=>rows.some(r=>r._kat===c));
   view.innerHTML = `<div class="pagehdr"><div><h1>Oprávnění / Toky údajů</h1><div class="sub">${fmt(rows.length)} oprávnění mezi agendami (princip only-once)</div></div></div>`;
   listPage({ rows, exportName:'opravneni',
     searchText:r=>nameOf(r['z'])+' '+nameOf(r['do']),
     filters:[
+      {label:'Kategorie (příjemce)', values:opKat, test:(r,v)=>r._kat===v},
       dulFilter,
       {label:'Referenční rozhraní', values:['ano','ne'], test:(r,v)=>r.ref===(v==='ano')},
     ],
@@ -472,6 +490,7 @@ async function opravneni(arg){
       {h:'Zdroj (dává) – z agendy',render:r=>link(r['z'])},
       {h:'→',render:()=>'<span class="muted">dává →</span>'},
       {h:'Příjemce (bere) – do agendy',render:r=>link(r['do'])},
+      {h:'Kategorie',render:r=>`<span class="chip">${esc(r._kat||'—')}</span>`},
       {h:'Důležitost',render:r=>badgeDul(r._dulezitost)},
       {h:'Údajů',cls:'right',render:r=>fmt(r.pocet_udaju)},
       {h:'Přístup',render:r=>(r.rw||[]).map(x=>`<span class="badge ${x==='W'?'pink':'cyan'}">${esc(x)}</span>`).join(' ')||'—'},
@@ -868,14 +887,69 @@ function badgeDul(b){
 }
 const dulFilter = { label:'Důležitost', values:DUL_ORDER, test:(r,v)=>r._dulezitost===v };
 
+/* ---------- Kategorizace agend (tematická oblast + právní předpis) ---------- */
+const AGENDA_CATS = [
+  ['Daně, poplatky a cla',/daň|daně|daňov|poplat|clo|celní|spotřeb|dph|tabák|líh|hazard/],
+  ['Dotace, podpora a fondy',/dotac|podpor|fond|grant|příspěvk|investičn pobíd/],
+  ['Doprava a vozidla',/doprav|vozidl|silnič|silnic|řidič|pozemních komunik|drážn|želez|letec|plavb|námoř/],
+  ['Energetika',/energ|plyn|elektřin|elektroenerg|teplárenstv|jadern|ropn|paliv/],
+  ['Životní prostředí',/životní prostřed|ovzduš|odpad|vodn|příod|přírod|ekolog|emis|chemick|ochrana ovzduší|ochrana přírody/],
+  ['Zemědělství a potraviny',/zeměděl|rostlin|veterin|potravin|rybář|včela|hnojiv|osiv|půd|vinohrad|chmel|les(?!k)/],
+  ['Zdravotnictví a léčiva',/zdrav|léčiv|lékař|lékárn|pacient|nemocnic|hygien|epidem|návykov|ochranné léč/],
+  ['Sociální oblast a práce',/sociál|dávk|důchod|zaměstnan|nezaměstnan|pojistné|nemocensk|rodičov|invalid|hmotné nouz/],
+  ['Školství, věda a kultura',/škol|vzděláv|student|univerzit|věd|výzkum|kultur|památk|umění|knihovn|sport|mládež/],
+  ['Bezpečnost, obrana a justice',/policie|polici|hasič|obran|bezpečnost|zpravodaj|soud|exekut|notář|advokát|mediát|justic|vězeň|trest|krizov|civilní ochran|zbran|sankc/],
+  ['Stavebnictví a katastr',/stavebn|staveb|územn|katastr|nemovitost|pozemk|geodez|kartograf/],
+  ['Finanční trh a pojišťovnictví',/finanč|bank|pojišť|pojištěn|kapitál|cenných papír|úvěr|platebn|měn/],
+  ['Komory a svobodná povolání',/komor|architekt|auditor|daňov porad|tlumočn|znalec|profesn/],
+  ['Občan, doklady a matrika',/matrik|občansk průkaz|cestovní doklad|evidence obyvatel|trvalý pobyt|sňatek|narozen|úmrt|státní občanstv|cizinec|cizineck|azyl|uprchl|mezinárodní ochran/],
+  ['IT a komunikace',/informačn systém|elektronick komunik|kybernetick|telekomunik|digitáln|datov schránk|audiovizu|televiz|rozhlas/],
+  ['Podnikání a živnosti',/živnost|podnik|obchodn rejstřík|hospodářsk soutěž|veřejn zakázk|veřejn podpor|ochrana spotřebitel|trh s výrobk/],
+  ['Registry a evidence',/registr|evidenc|seznam|katalog|rejstřík/],
+  ['Veřejná správa a samospráva',/veřejn správ|samospráv|obec|kraj|úřad|volb|referend|přestupk|správní řízení/],
+];
+const AGENDA_CAT_NAMES = AGENDA_CATS.map(c=>c[0]).concat(['Ostatní']);
+function agendaText(a){ return (a.nazev+' '+((a.cinnosti||[]).map(c=>c.nazev).join(' '))).toLowerCase(); }
+function agendaCategory(a){ const t=agendaText(a); for (const [n,re] of AGENDA_CATS) if (re.test(t)) return n; return 'Ostatní'; }
+function agendaLaw(a){
+  const n = a.nazev||'';
+  let m = n.match(/zákon[a-zěí]*\s*č\.\s*\d+\/\d+\s*Sb\./i); if (m) return m[0].replace(/\s+/g,' ').trim();
+  m = n.match(/zákon[a-zěí]*\s+o\s+[^,(;]+/i); if (m) return m[0].trim().replace(/^zákon\w*/i,'Zákon').replace(/\s+/g,' ');
+  return '(neuvedeno)';
+}
+let _agMeta = null;
+async function ensureAgendaMeta(){
+  if (_agMeta) return _agMeta;
+  const ag = await load('agendy'); const map = {};
+  for (const a of ag){ a._kat = agendaCategory(a); a._zakon = agendaLaw(a); map[a.id] = a._kat; }
+  _agMeta = map; return map;
+}
+const _catTagged = {};
+async function ensureCategories(key){
+  const rows = await load(key);
+  if (_catTagged[key]) return rows;
+  if (key==='agendy'){ await ensureAgendaMeta(); _catTagged[key]=true; return rows; }
+  if (key==='isvs'){
+    const ovm = await ensureOvmTypes(); const om = {}; for (const o of ovm) om[o.id] = o._typ;
+    for (const r of rows) r._spravce_typ = om[r.spravce] || 'Neurčeno';
+    _catTagged[key]=true; return rows;
+  }
+  const map = await ensureAgendaMeta();
+  const fk = key==='opravneni' ? 'do' : 'agenda';
+  for (const r of rows){ r._kat = map[r[fk]] || '(bez agendy)'; }
+  _catTagged[key]=true; return rows;
+}
+
 /* ---------- DATABÁZE · prohlížeč a kontrola kvality dat ---------- */
 /* Pohled pro kolegu: surové propojené tabulky, fill-rate sloupců a kontrola
    referenční integrity (cizí klíče mířící na neexistující entitu). */
 const DB_TABLES = {
-  agendy: { label:'Agendy', file:'agendy', sub:'Agendy veřejné správy', searchText:r=>r.nazev+' '+r.kod+' '+r.id, fields:[
+  agendy: { label:'Agendy', file:'agendy', sub:'Agendy veřejné správy', searchText:r=>r.nazev+' '+r.kod+' '+r.id+' '+(r._zakon||''), fields:[
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_kat',h:'Kategorie',kind:'enum'},
+    {k:'_zakon',h:'Právní předpis',kind:'longtext'},
     {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'ohlasovatel',h:'Ohlašovatel',kind:'fk',ref:'ovm',req:true},
     {k:'stanovisko_sluzby',h:'Stanov. služby',kind:'enum'},
@@ -889,6 +963,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'ident',h:'Ident',kind:'mono'},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_spravce_typ',h:'Typ správce',kind:'enum'},
     {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'spravce',h:'Správce',kind:'fk',ref:'ovm',req:true},
     {k:'bezuroven',h:'Bezp. úroveň',kind:'enum'},
@@ -914,6 +989,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'ident',h:'Ident',kind:'mono'},
     {k:'nazev',h:'Název',kind:'self',req:true},
+    {k:'_kat',h:'Kategorie',kind:'enum'},
     {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
     {k:'typ',h:'Typ',kind:'enum'},
@@ -925,6 +1001,7 @@ const DB_TABLES = {
     {k:'id',h:'ID',kind:'mono',req:true},
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'nazev',h:'Název',kind:'text',req:true},
+    {k:'_kat',h:'Kategorie',kind:'enum'},
     {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'agenda',h:'Agenda',kind:'fk',ref:'agenda',req:true},
     {k:'popis',h:'Popis',kind:'longtext'},
@@ -935,6 +1012,7 @@ const DB_TABLES = {
     {k:'kod',h:'Kód',kind:'mono',req:true},
     {k:'z',h:'Z agendy',kind:'fk',ref:'agenda',req:true},
     {k:'do',h:'Do agendy',kind:'fk',ref:'agenda',req:true},
+    {k:'_kat',h:'Kategorie',kind:'enum'},
     {k:'_dulezitost',h:'Důležitost',kind:'enum',order:DUL_ORDER,badge:'dul'},
     {k:'typ',h:'Typ',kind:'longtext'},
     {k:'pocet_udaju',h:'Počet údajů',kind:'num'},
@@ -1019,6 +1097,7 @@ async function databaze(arg){
   const rows = await load(spec.file);
   if (key==='ovm') await ensureOvmTypes();   // doplní _typ (typ instituce)
   await ensureImportance(key);               // doplní _dulezitost (pásmo důležitosti)
+  await ensureCategories(key);               // doplní _kat / _zakon / _spravce_typ
   // valid-id sets only for refs this table uses
   const refs = [...new Set(spec.fields.filter(f=>f.ref).map(f=>f.ref))];
   const refsets = {};
