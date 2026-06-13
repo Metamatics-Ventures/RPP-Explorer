@@ -1302,7 +1302,7 @@ function nl2sql(q){
   if (has('bez bezpe','neuveden','chybi','prazdn') && (table==='isvs')) where.push(`(bezuroven IS NULL OR bezuroven = '')`);
   else if (has('kritick')){ if(table==='isvs' && has('bezpe')) where.push(`bezuroven LIKE '%Kritická%'`); else where.push(`dulezitost = 'Kritická'`); }
   else if (has('nejdulezit','vysok','dulezit')) where.push(`dulezitost IN ('Kritická','Vysoká')`);
-  if (has('cloud')) where.push(`umisteni LIKE '%cloud%'`);
+  if (has('cloud')) where.push(`umisteni LIKE '%využitím cloud%'`);   // pozor: 'Bez cloud computingu' obsahuje slovo cloud
   const count = has('kolik','pocet','pocty');
   const sel = count ? 'COUNT(*) AS pocet' : '*';
   let sql = `SELECT ${sel} FROM ${table}`;
