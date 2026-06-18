@@ -101,6 +101,39 @@
       <a data-route="srovnani" href="#/srovnani"><span class="i">⚖️</span> Srovnání</a>
       <a data-route="gap" href="#/gap"><span class="i">🌍</span> Gap analýza (architektura)</a>
     </nav>
+    <div class="navsec">Stav digitalizace <span style="font-weight:400;opacity:.6">· v8</span></div>
+    <nav class="nav">
+      <a data-route="oblasti" href="#/oblasti"><span class="i">🧭</span> Oblasti státu</a>
+      <a data-route="kvadranty" href="#/kvadranty"><span class="i">📐</span> Kvadranty · pozice ČR</a>
+      <a data-route="digitalizace" href="#/digitalizace"><span class="i">📶</span> Stupeň digitalizace</a>
+      <a data-route="bezpecnost" href="#/bezpecnost"><span class="i">🛡️</span> Bezpečnostní úroveň</a>
+      <a data-route="prilezitosti" href="#/prilezitosti"><span class="i">✅</span> Kde můžeme být lepší</a>
+    </nav>
+    <div class="navsec">Kritické agendy <span style="font-weight:400;opacity:.6">· v8</span></div>
+    <nav class="nav">
+      <a data-route="kriticnost" href="#/kriticnost"><span class="i">🚨</span> Kritické agendy · formulář</a>
+      <a data-route="nevypnutelny" href="#/nevypnutelny"><span class="i">🔌</span> Nevypnutelný stát</a>
+    </nav>
+    <div class="navsec">Závislosti &amp; rizika <span style="font-weight:400;opacity:.6">· v8</span></div>
+    <nav class="nav">
+      <a data-route="spof" href="#/spof"><span class="i">🎯</span> Na čem stát visí (SPOF)</a>
+      <a data-route="zavislosti" href="#/zavislosti"><span class="i">🗺️</span> Mapa závislostí</a>
+      <a data-route="cloud" href="#/cloud"><span class="i">☁️</span> Cloudové závislosti</a>
+      <a data-route="api" href="#/api"><span class="i">🔧</span> Stav API</a>
+    </nav>
+    <div class="navsec">Governance dat <span style="font-weight:400;opacity:.6">· v8</span></div>
+    <nav class="nav">
+      <a data-route="zdravi" href="#/zdravi"><span class="i">🩺</span> Zdraví dat · resorty</a>
+      <a data-route="duplicity" href="#/duplicity"><span class="i">🧬</span> Duplicitní názvy</a>
+      <a data-route="nastenka" href="#/nastenka"><span class="i">🏆</span> Nástěnka resortů</a>
+      <a data-route="metodika" href="#/metodika"><span class="i">📖</span> Metodika pro správce</a>
+    </nav>
+    <div class="navsec">Zdroje &amp; dotazy <span style="font-weight:400;opacity:.6">· v8</span></div>
+    <nav class="nav">
+      <a data-route="esbirka" href="#/esbirka"><span class="i">⚖️</span> e-Sbírka · validace</a>
+      <a data-route="dokumentace" href="#/dokumentace"><span class="i">📦</span> Vytěžování dokumentace</a>
+      <a data-route="zeptejse" href="#/zeptejse"><span class="i">💬</span> Zeptej se · přirozený jazyk</a>
+    </nav>
     <nav class="nav" style="margin-top:8px">
       <a data-route="about" href="#/about"><span class="i">ℹ️</span> O projektu</a>
     </nav>
@@ -143,5 +176,13 @@
   })();
   </script>
   <script src="app.js"></script>
+  <!-- v8 — moduly funkcí z porady DIA (16. 6. 2026). Načítají se PO app.js a registrují se na ROUTES. -->
+  <script src="features/feat_dashboard.js"></script>
+  <script src="features/feat_kriticnost.js"></script>
+  <script src="features/feat_governance.js"></script>
+  <script src="features/feat_zavislosti.js"></script>
+  <script src="features/feat_zdroje.js"></script>
+  <script>/* feature routy se registrují až po app.js — překresli, ať deep-link na novou routu funguje i na první načtení */
+    if (typeof render==='function' && !window.__locked){ try{ render(); }catch(e){ console.error(e); } }</script>
 </body>
 </html>
