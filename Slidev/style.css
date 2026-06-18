@@ -1,0 +1,90 @@
+:root {
+  --accent-blue: #4a9eff;
+  --accent-purple: #a855f7;
+  --accent-green: #22c55e;
+  --accent-teal: #14b8a6;
+  --accent-orange: #f97316;
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout h4 {
+  border: 0 !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+}
+
+.stat-big {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #4a9eff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-mid {
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #4a9eff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tag-blue { background: rgba(74,158,255,0.15); color: #4a9eff; border: 1px solid rgba(74,158,255,0.3); }
+.tag-purple { background: rgba(168,85,247,0.15); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+.tag-green { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.tag-teal { background: rgba(20,184,166,0.15); color: #14b8a6; border: 1px solid rgba(20,184,166,0.3); }
+.tag-orange { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.3); }
+.tag-red { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(74,158,255,0.08), rgba(168,85,247,0.08));
+  border: 1px solid rgba(168,85,247,0.25);
+  border-radius: 0.75rem;
+  padding: 0.9rem 1.2rem;
+}
+
+.cat-num {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #a855f7;
+}
+
+
+/* Hide the on-screen Slidev navigation/controls bar during the live presentation.
+   #slide-container has exactly two children: #slide-content (the slide) and the
+   controls slot (the hover nav bar). Hide the controls slot, keep the slide. */
+#slide-container > div:not(#slide-content) {
+  display: none !important;
+}
+
+/* Also hide the "go to slide" shortcut list (right side) and the drawing toolbar,
+   so NO Slidev dev-player chrome ever appears in the presentation or exported PDF. */
+.fixed.right-5,
+.autocomplete-list,
+.slidev-drawing-controls {
+  display: none !important;
+}

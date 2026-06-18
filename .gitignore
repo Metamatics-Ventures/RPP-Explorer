@@ -28,3 +28,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Slidev deps (494 MB)
+Slidev/node_modules/

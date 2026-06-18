@@ -25,7 +25,9 @@ Veřejná open data **Registru práv a povinností (RPP)**, jejichž správcem j
 - **Rozsah:** 56 datových sad ve formátu JSON (OFN — otevřené formální normy), ~840 MB
 - **Frekvence aktualizace:** denní
 
-Klíčové sady (počty záznamů): **agendy** (406), **ISVS / informační systémy** (12 110), **OVM / orgány veřejné moci** (19 555), **služby** (9 607), **údaje** (828 objektů), **oprávnění k údajům** (1 879) a **působnost v agendách** (957 582 vazeb) + 33 číselníků.
+Klíčové sady (počty záznamů): **agendy** (406), **ISVS / informační systémy** (12 110 v registru, z toho **3 648 agendových** — navázaných na agendu), **OVM / orgány veřejné moci** (19 555 záznamů, z toho **18 263 aktivních**; zbytek jsou zaniklé/zrušené orgány), **služby** (9 607), **údaje** (828 objektů), **oprávnění k údajům** (1 879) a **působnost v agendách** (910 668 vazeb) + 33 číselníků.
+
+> **Sesouhlasení s čísly DIA (T. Šedivec).** V dashboardu je tabulka „Srovnání s čísly DIA". Headline počty počítají jen aktivní/agendové množiny (aktivní OVM ≈ 18,3 tis. odpovídá číslu DIA 18 267; agendové IS ≈ 3,6 tis. odpovídá ~3,4 tis.). Rozdíly proti DIA jsou dané datem snapshotu (RPP se aktualizuje denně) a definicí počítané množiny, **ne chybou v datech** — v `isvs.json` např. nejsou žádné duplicity (12 110 řádků = 12 110 unikátních systémů).
 
 > Data **nejsou** součástí tohoto repozitáře (velikost, denní aktualizace). Stahuje je ETL skript (viz `docs/01`). Detailní soupis viz `RPP/README_RPP.md` v pracovním adresáři skupiny.
 

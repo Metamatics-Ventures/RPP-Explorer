@@ -1,0 +1,14 @@
+{
+  "name": "rpp-explorer-iterace-slides",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open false",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^0.49.0",
+    "@slidev/theme-default": "^0.25.0",
+    "vue": "^3.4.0"
+  }
+}
