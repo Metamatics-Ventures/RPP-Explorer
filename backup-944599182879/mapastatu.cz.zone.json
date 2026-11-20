@@ -1,0 +1,454 @@
+{
+ "zone": "/hostedzone/Z0921643VU0QLDAEWVH6",
+ "records": [
+  {
+   "Name": "mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d3tuksdg341ytp.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d3tuksdg341ytp.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "mapastatu.cz.",
+   "Type": "NS",
+   "TTL": 172800,
+   "ResourceRecords": [
+    {
+     "Value": "ns-1276.awsdns-31.org."
+    },
+    {
+     "Value": "ns-733.awsdns-27.net."
+    },
+    {
+     "Value": "ns-375.awsdns-46.com."
+    },
+    {
+     "Value": "ns-1831.awsdns-36.co.uk."
+    }
+   ]
+  },
+  {
+   "Name": "mapastatu.cz.",
+   "Type": "SOA",
+   "TTL": 900,
+   "ResourceRecords": [
+    {
+     "Value": "ns-1276.awsdns-31.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+    }
+   ]
+  },
+  {
+   "Name": "_31a1bfb0976b8e6a42946efbea38b590.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_f2f3a5b022847ba61dc3e5b03d4db810.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_d67f343d9e6c0e14805394769b22451e.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_d8629c2f71aa1cb9d1ee3d04e7cae90d.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "digitalizace.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d36g7yqafr1ah8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "digitalizace.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d36g7yqafr1ah8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_305cf2a649891e5b3264e828f8e923b8.digitalizace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_4aa2c524c63d8276d553dc8d785d02bd.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_7c80a41546c2b54ade4d2881a4010282.digitalizace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_bd0bc343ea640ea2a27dd9a38f139ff8.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "dopady.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "dmf0b2pp698ij.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "dopady.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "dmf0b2pp698ij.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_709dacbaa0e6a1ff85c64c5572b4e361.dopady.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_332a15d94b310158ed34a43cbaedafc3.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_ce76d31d01d162deadf6855081fbf907.dopady.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_43e017fb74076f41a35aec17421886f0.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "etalon.mapastatu.cz.",
+   "Type": "A",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "136.82.25.144"
+    }
+   ]
+  },
+  {
+   "Name": "_19662d57c55768b04eabc1dacb9cb36e.etalon.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_44d8f78dfcd599797c10c1996971262b.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "kompetitivnost.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1kv5f2xqlrh1p.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "kompetitivnost.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1kv5f2xqlrh1p.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_b39ac0216c0f3a788db9243e7d6602a3.kompetitivnost.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_46ae78bb2c1c02d9af12cfc905fb03c7.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_c6544ada779a85453dd91a2d97f0b21a.kompetitivnost.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_bd1f99a2e39477b9916607b9a5d3da4d.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "krizovapripravenost.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1ro2vuvtn8xn8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "krizovapripravenost.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1ro2vuvtn8xn8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_13cbbe677d77c8abc6dd5fa1f0b47237.krizovapripravenost.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_14d02139b065d9ed8f4d245192aa8cc1.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_34f5faac0931ffaa6bfb91a1c148183a.krizovapripravenost.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_88aa623727639f5fd902daee183af2e0.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "krizoverizeni.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1ro2vuvtn8xn8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "krizoverizeni.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1ro2vuvtn8xn8.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_8452dab79b62c7ad0267acfdacc605cb.krizoverizeni.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_4f768f3c79962c30e1fca6d187417ae7.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_f2b3d3abb8e47a8caaaab17245c2fc01.krizoverizeni.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_4f558feb5419a847a51bfe2f9e08d3a8.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "krizovescenare.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d1th7wcxmksgqe.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_81aed499f1c2ea567882a41fdcc00a99.krizovescenare.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_62524528ee7ad9c241029ea9d4151d61.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_e0fe90199de3d38b30459f622088a805.krizovescenare.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_8e97cfd699258bf6effef3ec02870182.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "simulace.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "djynofzlmcxqa.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "simulace.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "djynofzlmcxqa.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_8ec089cdabe612577673a1ebc37f65ea.simulace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_5bfed01b33efa749062a214e39a10cda.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_95f66f75d86dea7849e774c617e3f93e.simulace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_b1ff9883a571f5c6a144ee6ec62ca4fe.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "situace.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d2axg8i1j45801.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "situace.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d2axg8i1j45801.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_7a215c49b2be82955cbbc716a23c7b9f.situace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_e0035a0dd9ae1a33a9231db718b3abdf.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_c5acddd6a1a7c81fa57b19788ae4c925.situace.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_27b2407c339ec47512a86f9c0b99308a.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "www.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d3tuksdg341ytp.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "www.mapastatu.cz.",
+   "Type": "AAAA",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "d3tuksdg341ytp.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_5319e246ad0e0e9af6de0324e50bd89c.www.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_d2f2bb6b484c32ce1325131f1f082741.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_c727e56f24978b25b9e7a5755d054a35.www.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_f3c0f0887bf891767008b750085d2c1c.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "zakony.mapastatu.cz.",
+   "Type": "A",
+   "AliasTarget": {
+    "HostedZoneId": "Z2FDTNDATAQYW2",
+    "DNSName": "dexvm9p1ns4w9.cloudfront.net.",
+    "EvaluateTargetHealth": false
+   }
+  },
+  {
+   "Name": "_87d9b50666612c1815d439a42b49f37a.zakony.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_95a56c24d6c9f751c520f928f3d1d83b.jkddzztszm.acm-validations.aws."
+    }
+   ]
+  },
+  {
+   "Name": "_e06caef87faad771a3d8710e9f972a1f.zakony.mapastatu.cz.",
+   "Type": "CNAME",
+   "TTL": 300,
+   "ResourceRecords": [
+    {
+     "Value": "_7affb398253ff78f900473632e0252ba.wzccmgtwzk.acm-validations.aws."
+    }
+   ]
+  }
+ ]
+}

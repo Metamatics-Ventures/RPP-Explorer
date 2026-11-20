@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Informace, inteligence, čas rozhodnutí — 19. 11. 2026, CEVRO Univerzita</title>
+<meta name="description" content="Druhý ročník odborné konference AFCEA a CEVRO Univerzity. Suverenita a odolnost státu v éře umělé inteligence. 19. listopadu 2026, Jungmannova 17, Praha 1."/>
+<meta property="og:title" content="Informace, inteligence, čas rozhodnutí — 2. ročník"/>
+<meta property="og:description" content="Naše země se rozhoduje rychleji, než rozumí. 19. 11. 2026, CEVRO Univerzita, Praha."/>
+<meta property="og:image" content="assets/img/og.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="assets/afcea-logo.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   INFORMACE, INTELIGENCE, ČAS ROZHODNUTÍ — 2. ročník, 19. 11. 2026
+   v2 — odvážnější systém: papír + inkoust, šest barev témat,
+   risografická koláž v písmu (á la beyond tellerrand), 3D objekty
+   prolnuté s typografií (á la Push), plné barevné bloky (á la Config).
+   =================================================================== */
+:root{
+  --ink:#08080b; --ink2:#101017; --ink3:#191922;
+  --paper:#f4f1e8; --paper2:#e9e4d6; --paper3:#d8d1bd;
+  /* šest barev = šest témat programu */
+  --magenta:#ff2e88; --cobalt:#2b4dff; --vermilion:#ff3b1f;
+  --lime:#c9f24d;    --amber:#ffb020;  --cyan:#4ad4ff;
+  --on-dark:#ffffff; --on-dark2:#c5ccd8; --on-dark3:#8b93a3; --on-dark4:#5a6170;
+  --on-paper:#08080b; --on-paper2:#44474f; --on-paper3:#6d7178;
+  --line-d:rgba(255,255,255,.13); --line-d2:rgba(255,255,255,.3);
+  --line-p:rgba(8,8,11,.14); --line-p2:rgba(8,8,11,.3);
+  --disp:'Archivo',Impact,'Arial Narrow',sans-serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif;
+  --mono:'Fira Code',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --maxw:1280px; --nav:64px;
+  --ease:cubic-bezier(.16,.84,.34,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:calc(var(--nav) + 10px)}
+body{margin:0;background:var(--ink);color:var(--on-dark2);font-family:var(--sans);
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--vermilion);color:#fff}
+
+/* ---------- typografie ---------- */
+h1,h2,h3,h4{margin:0;color:var(--on-dark);line-height:1.02;letter-spacing:-.018em}
+.disp{font-family:var(--disp);font-weight:800;font-stretch:72%;text-transform:uppercase;
+  line-height:.9;letter-spacing:-.008em}
+h2.disp{font-size:clamp(2.2rem,5.8vw,4.6rem)}
+h3{font-family:var(--sans);font-size:1.06rem;font-weight:650;line-height:1.35;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.7rem;margin-bottom:1.1rem;font-weight:500;color:var(--vermilion)}
+.eyebrow::before{content:"";width:28px;height:2px;background:currentColor;flex:none}
+.lede{font-size:clamp(1.02rem,1.5vw,1.24rem);line-height:1.56;font-weight:300;max-width:66ch}
+.tiny{font-size:.8rem;line-height:1.5;color:var(--on-dark4)}
+.mono{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em}
+strong{color:var(--on-dark);font-weight:600}
+em{font-style:normal;color:var(--vermilion)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:clamp(18px,4vw,44px)}
+section{position:relative;padding-block:clamp(74px,9.5vw,140px)}
+.sec-head{max-width:76ch;margin-bottom:clamp(36px,5vw,66px)}
+.sec-head .lede{margin-top:1.3rem}
+.grid{display:grid;gap:clamp(14px,1.7vw,24px)}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rule{height:1px;background:var(--line-d);border:0;margin:0}
+
+/* ---------- papír ---------- */
+.paper{background:var(--paper);color:var(--on-paper2)}
+.paper h1,.paper h2,.paper h3,.paper h4{color:var(--on-paper)}
+.paper .lede,.paper strong{color:var(--on-paper)}
+.paper .lede{color:var(--on-paper2)}
+.paper .tiny{color:var(--on-paper3)}
+.paper .rule{background:var(--line-p)}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.07s}.rv.d2{transition-delay:.14s}.rv.d3{transition-delay:.21s}
+.rv.d4{transition-delay:.28s}.rv.d5{transition-delay:.35s}.rv.d6{transition-delay:.42s}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ---------- navigace ---------- */
+.progress{position:fixed;top:0;left:0;height:3px;z-index:120;width:0;
+  background:linear-gradient(90deg,var(--vermilion),var(--magenta),var(--cobalt),var(--lime));
+  transition:width .1s linear}
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav);z-index:110;display:flex;align-items:center;
+  background:rgba(8,8,11,.7);backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  border-bottom:1px solid transparent;transition:background .35s,border-color .35s}
+nav.solid{background:rgba(8,8,11,.95);border-bottom-color:var(--line-d)}
+nav .wrap{display:flex;align-items:center;gap:20px;width:100%}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand .mark{width:28px;height:28px;flex:none;border-radius:3px;background:#fff;display:grid;place-items:center;overflow:hidden}
+.brand .mark img{width:22px}
+.brand .txt{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:.8rem;color:#fff;line-height:1.02}
+.brand .txt span{display:block;font-family:var(--mono);font-stretch:normal;font-weight:400;
+  font-size:.56rem;letter-spacing:.2em;color:var(--vermilion);margin-top:2px}
+.navlinks{display:flex;gap:1px;margin-left:auto;align-items:center}
+.navlinks a{font-size:.82rem;font-weight:500;color:var(--on-dark3);padding:8px 11px;border-radius:5px;
+  transition:color .2s,background .2s;white-space:nowrap}
+.navlinks a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navlinks a.cta{background:var(--vermilion);color:#fff;font-weight:650;padding:9px 18px;margin-left:8px}
+.navlinks a.cta:hover{background:#fff;color:var(--ink)}
+.burger{display:none;margin-left:auto;padding:8px;color:#fff}
+.burger svg{width:22px;height:22px}
+@media (max-width:1060px){
+  .navlinks{position:fixed;top:var(--nav);left:0;right:0;flex-direction:column;gap:0;align-items:stretch;
+    background:rgba(8,8,11,.98);border-bottom:1px solid var(--line-d);padding:10px;
+    transform:translateY(-130%);transition:transform .4s var(--ease)}
+  .navlinks.open{transform:none}
+  .navlinks a{padding:13px 12px;font-size:.95rem;border-radius:7px}
+  .navlinks a.cta{margin:8px 0 2px;text-align:center}
+  .burger{display:block}
+}
+
+/* ===================== HERO ===================== */
+.hero{position:relative;min-height:min(100vh,1020px);display:flex;flex-direction:column;
+  justify-content:flex-end;padding-top:calc(var(--nav) + 44px);padding-bottom:clamp(26px,4vw,52px);
+  overflow:hidden;background:var(--ink)}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:78px 78px;
+  mask-image:radial-gradient(1200px 800px at 50% 30%,#000,transparent 72%);
+  -webkit-mask-image:radial-gradient(1200px 800px at 50% 30%,#000,transparent 72%)}
+.hero .wrap{position:relative;z-index:3;width:100%}
+.hero-meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:clamp(18px,2.6vw,30px)}
+.chip{font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:7px 13px;border-radius:2px;font-weight:500}
+.chip.v{background:var(--vermilion);color:#fff}
+.chip.l{background:var(--lime);color:var(--ink)}
+.chip.o{border:1px solid var(--line-d2);color:var(--on-dark2)}
+
+/* titul s koláží v písmu */
+.title{position:relative;z-index:3}
+.title .ln{position:relative;z-index:3;display:block;font-family:var(--disp);font-weight:800;font-stretch:64%;
+  text-transform:uppercase;font-size:clamp(2.7rem,10.4vw,9.6rem);line-height:.94;letter-spacing:-.022em;color:#fff}
+.title .fill{z-index:1}
+.title .fill{
+  background-image:url("assets/img/collage.webp");
+  background-size:118% auto;background-position:center 42%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:drift 26s ease-in-out infinite alternate;
+}
+@keyframes drift{from{background-position:38% 40%}to{background-position:62% 56%}}
+@media (prefers-reduced-motion:reduce){.title .fill{animation:none}}
+.hero-obj{
+  position:absolute;z-index:2;pointer-events:none;
+  width:clamp(220px,27vw,400px);right:8%;top:-10%;
+  filter:drop-shadow(0 40px 70px rgba(0,0,0,.7));
+  will-change:transform;
+}
+.hero-sub{position:relative;z-index:3;font-size:clamp(1.04rem,1.85vw,1.5rem);font-weight:300;
+  line-height:1.4;color:#e9eef5;max-width:32ch;margin-top:clamp(22px,3vw,34px)}
+.hero-sub b{font-weight:650;color:#fff}
+.hero-bottom{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:clamp(22px,4vw,50px);align-items:end;margin-top:clamp(28px,4vw,52px);
+  padding-top:clamp(20px,2.6vw,30px);border-top:1px solid var(--line-d)}
+.hero-facts{display:flex;flex-wrap:wrap;gap:clamp(18px,3.2vw,44px)}
+.fact .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--on-dark4);margin-bottom:5px}
+.fact .v{font-family:var(--disp);font-stretch:70%;font-weight:700;text-transform:uppercase;
+  font-size:clamp(1rem,1.8vw,1.42rem);color:#fff;line-height:1.02}
+.fact .v small{display:block;font-family:var(--sans);font-stretch:normal;font-weight:400;
+  text-transform:none;font-size:.77rem;color:var(--on-dark3);letter-spacing:0;margin-top:3px}
+.cd{display:flex;gap:4px;flex:none}
+.cd .unit{min-width:64px;padding:10px 8px 8px;text-align:center;background:rgba(255,255,255,.05);
+  border-radius:3px}
+.cd .n{font-family:var(--disp);font-stretch:68%;font-weight:800;
+  font-size:clamp(1.4rem,2.7vw,2rem);color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.cd .u{font-family:var(--mono);font-size:.54rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--on-dark4);margin-top:4px}
+.cd .unit.sec{background:var(--vermilion)}
+.cd .unit.sec .u{color:rgba(255,255,255,.75)}
+@media (max-width:900px){
+  .hero{min-height:auto;padding-bottom:36px}
+  .hero-bottom{grid-template-columns:1fr;align-items:start}
+  .cd{width:100%}.cd .unit{min-width:0;flex:1}
+  .hero-obj{width:min(40vw,168px);right:-5%;top:-28%;opacity:.95}
+}
+
+/* ---------- barevný pás / marquee ---------- */
+.band{background:var(--vermilion);color:#fff;overflow:hidden;padding-block:14px;display:flex}
+.band-track{display:flex;white-space:nowrap;animation:slide 40s linear infinite;flex:none}
+.band:hover .band-track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.band-track span{font-family:var(--disp);font-stretch:74%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(.95rem,1.7vw,1.4rem);padding-inline:24px;display:inline-flex;align-items:center;gap:24px}
+.band-track span::after{content:"";width:7px;height:7px;background:#fff;flex:none;border-radius:50%}
+
+/* ---------- mise (papír + koláž) ---------- */
+.mission-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:clamp(28px,5vw,76px);align-items:start}
+.pullquote{font-family:var(--disp);font-stretch:72%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.55rem,3.6vw,2.9rem);line-height:.98;color:var(--on-paper);letter-spacing:-.012em}
+.mission-body p+p{margin-top:1.15rem}
+.qcard{border:2px solid var(--on-paper);border-radius:4px;overflow:hidden;background:#fff}
+.qcard .qstrip{height:86px;background:url("assets/img/collage-alt.webp") center/cover;border-bottom:2px solid var(--on-paper)}
+.qcard .qa{padding:16px 20px;border-bottom:1px solid var(--line-p)}
+.qcard .qa:last-child{border-bottom:0}
+.qcard .qa h4{font-family:var(--sans);font-size:.97rem;font-weight:650;margin-bottom:4px;color:var(--on-paper)}
+.qcard .qa p{font-size:.87rem;color:var(--on-paper3);line-height:1.5}
+@media (max-width:920px){.mission-grid{grid-template-columns:1fr}}
+
+/* ---------- pilíře ---------- */
+.pill-switch{display:inline-flex;gap:4px;margin-bottom:clamp(26px,4vw,44px)}
+.pill-switch button{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:11px 20px;border:1px solid var(--line-d);border-radius:2px;color:var(--on-dark3);
+  transition:.26s var(--ease);font-weight:500}
+.pill-switch button.on{background:#fff;border-color:#fff;color:var(--ink)}
+.pill-panel{display:none}
+.pill-panel.on{display:block;animation:fade .55s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.pill-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(24px,4vw,56px);
+  align-items:center;margin-bottom:clamp(28px,4vw,46px)}
+.pill-word{position:relative}
+.pill-word .w{font-family:var(--disp);font-stretch:62%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(2.6rem,7vw,5.6rem);line-height:.86;letter-spacing:-.025em;color:#fff;position:relative;z-index:2}
+.pill-word .sub{display:block;font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;margin-top:14px;position:relative;z-index:2}
+.pill-word img{position:absolute;z-index:1;width:clamp(150px,20vw,260px);right:-6%;top:-38%;
+  filter:drop-shadow(0 30px 50px rgba(0,0,0,.6))}
+.pill-list{display:grid;gap:8px}
+.pill-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;
+  padding:14px 16px;border-left:3px solid var(--bc,var(--vermilion));border-radius:0 4px 4px 0;background:rgba(255,255,255,.04);
+  transition:.3s var(--ease)}
+.pill-item:hover{background:rgba(255,255,255,.08);transform:translateX(5px)}
+.pill-item .num{font-family:var(--mono);font-size:.66rem;padding-top:3px;letter-spacing:.06em;color:var(--bc,var(--vermilion))}
+.pill-item p{font-size:.93rem;line-height:1.5;color:var(--on-dark2)}
+.pill-item p b{color:#fff;font-weight:650}
+.pill-note{margin-top:clamp(22px,3vw,34px);padding:22px 26px;border-radius:4px}
+.pill-note p{font-size:1.04rem;font-weight:500;color:var(--ink)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:24px}
+.stat{padding:18px 18px;border-radius:4px;background:rgba(255,255,255,.05)}
+.stat .sv{font-family:var(--disp);font-stretch:66%;font-weight:800;font-size:clamp(1.8rem,3.4vw,2.7rem);
+  line-height:.88;font-variant-numeric:tabular-nums}
+.stat .sk{font-family:var(--mono);font-size:.6rem;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--on-dark4);margin-top:8px}
+@media (max-width:920px){
+  .pill-top{grid-template-columns:1fr}
+  .pill-word img{width:130px;right:0;top:-30%}
+}
+
+/* ---------- otázky na koláži ---------- */
+.questions{background:var(--ink);overflow:hidden}
+.questions::before{content:"";position:absolute;inset:0;z-index:0;
+  background:url("assets/img/collage-dark.webp") center/cover;opacity:.9}
+.questions::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg,rgba(8,8,11,.94) 0%,rgba(8,8,11,.7) 55%,rgba(8,8,11,.35) 100%)}
+.questions .wrap{position:relative;z-index:2}
+.q-stage{position:relative;min-height:clamp(190px,27vw,300px);display:flex;align-items:center;margin-block:clamp(24px,3.4vw,40px)}
+.q-item{position:absolute;inset:0;display:flex;align-items:center;opacity:0;transform:translateY(26px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);pointer-events:none}
+.q-item.on{opacity:1;transform:none}
+.q-item p{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.7rem,5vw,3.8rem);line-height:.95;color:#fff;letter-spacing:-.015em;max-width:25ch;
+  text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.q-dots{display:flex;gap:6px;flex-wrap:wrap}
+.q-dots button{width:26px;height:4px;background:rgba(255,255,255,.28);transition:.3s}
+.q-dots button.on{background:var(--lime);width:46px}
+
+/* ---------- pás sdíleného obrazu ---------- */
+.picband{position:relative;padding-block:clamp(90px,11vw,160px);overflow:hidden;background:#04060c}
+.picband img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75;z-index:0}
+.picband::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(4,6,12,.8),rgba(4,6,12,.62) 45%,rgba(4,6,12,.92)),
+             radial-gradient(760px 340px at 50% 50%,rgba(4,6,12,.72),transparent 70%)}
+.picband .wrap{position:relative;z-index:2;text-align:center}
+.picband h2{font-size:clamp(2rem,5.4vw,4.2rem);margin:0 auto 20px;max-width:26ch}
+.picband p{max-width:60ch;margin:0 auto;color:#d3dae6}
+
+/* ---------- program ---------- */
+.prog-filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:clamp(24px,3.4vw,40px)}
+.filt{font-family:var(--mono);font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;
+  padding:9px 15px;border:2px solid var(--on-paper);border-radius:2px;color:var(--on-paper);
+  transition:.24s var(--ease);font-weight:500;background:transparent}
+.filt:hover{background:var(--on-paper);color:var(--paper)}
+.filt.on{background:var(--on-paper);color:var(--paper)}
+.filt .c{opacity:.5;margin-left:.45em}
+.block{margin-bottom:clamp(32px,4.4vw,54px)}
+.block-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;padding-bottom:12px;
+  border-bottom:3px solid var(--on-paper);margin-bottom:4px}
+.block-head .bid{font-family:var(--disp);font-stretch:64%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.5rem,3.2vw,2.5rem);color:var(--on-paper);line-height:.9}
+.block-head .bmeta{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--on-paper3);margin-left:auto}
+.block-head p{font-size:.91rem;color:var(--on-paper3);max-width:54ch}
+.slot{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:clamp(12px,2vw,24px);
+  align-items:start;padding:19px 4px;border-bottom:1px solid var(--line-p);cursor:pointer;
+  transition:background .26s var(--ease),padding .26s var(--ease);position:relative}
+.slot::before{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--c,var(--vermilion));
+  transition:width .26s var(--ease)}
+.slot:hover{background:rgba(8,8,11,.04);padding-inline:16px}
+.slot:hover::before{width:4px}
+.slot.hide{display:none}
+.slot .idx{font-family:var(--mono);font-size:.7rem;color:var(--on-paper3);padding-top:4px}
+.slot h3{color:var(--on-paper);font-size:clamp(1rem,1.5vw,1.24rem);font-weight:650;margin-bottom:6px}
+.slot .who{font-size:.88rem;color:var(--on-paper2);display:flex;flex-wrap:wrap;gap:3px 9px;align-items:center}
+.slot .who b{color:var(--on-paper);font-weight:650}
+.slot .who .org{color:var(--on-paper3)}
+.tag{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 9px;border-radius:2px;font-weight:500;
+  background:var(--c,var(--vermilion));color:var(--on-c,#fff)}
+.slot .arrow{color:var(--on-paper3);font-size:1.1rem;padding-top:4px;transition:transform .26s var(--ease),color .26s}
+.slot:hover .arrow{transform:translateX(6px);color:var(--c,var(--vermilion))}
+.prog-note{margin-top:10px;padding:18px 22px;background:var(--on-paper);color:#cfd3da;border-radius:4px;font-size:.88rem}
+.prog-note strong{color:var(--lime)}
+@media (max-width:720px){.slot{grid-template-columns:30px minmax(0,1fr)}.slot .arrow{display:none}}
+
+/* ---------- řečníci ---------- */
+.spk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:clamp(11px,1.4vw,18px)}
+.spk{position:relative;text-align:left;padding:20px 18px 18px;border-radius:5px;
+  background:var(--ink2);transition:.3s var(--ease);overflow:hidden;
+  display:flex;flex-direction:column;gap:11px;min-height:196px;border:1px solid var(--line-d)}
+.spk::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--c,var(--vermilion))}
+.spk:hover{transform:translateY(-5px);background:var(--ink3);border-color:var(--line-d2)}
+.spk .av{width:44px;height:44px;border-radius:3px;flex:none;display:grid;place-items:center;
+  font-family:var(--disp);font-stretch:72%;font-weight:800;font-size:1rem;
+  background:var(--c,var(--vermilion));color:var(--on-c,#fff);letter-spacing:.02em}
+.spk .nm{font-size:.99rem;font-weight:650;color:#fff;line-height:1.26;letter-spacing:-.012em}
+.spk .rl{font-size:.79rem;color:var(--on-dark3);line-height:1.42;margin-top:-5px}
+.spk .tk{margin-top:auto;padding-top:11px;border-top:1px solid var(--line-d);font-size:.81rem;
+  color:var(--on-dark2);line-height:1.42;display:flex;gap:7px}
+.spk .tk::before{content:"→";color:var(--c,var(--vermilion));flex:none;font-weight:700}
+.spk .tk.tbd{color:var(--on-dark4)}
+.spk .tk.tbd::before{color:var(--on-dark4)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.legend span{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 11px;border-radius:2px;font-weight:500}
+
+/* ---------- feature karty s objekty ---------- */
+.dual{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:clamp(14px,2.2vw,26px)}
+.feature{position:relative;padding:clamp(26px,3.4vw,42px);border-radius:6px;overflow:hidden;
+  background:var(--ink2);border:1px solid var(--line-d)}
+.feature .obj{position:absolute;width:clamp(120px,15vw,200px);right:-26px;top:-26px;z-index:0;opacity:.95;
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,.6))}
+.feature .obj.scr{mix-blend-mode:screen}
+.feature > *{position:relative;z-index:1}
+.feature h3{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.4rem,2.6vw,2.05rem);line-height:.96;margin-bottom:14px;max-width:18ch}
+.feature p{font-size:.95rem;line-height:1.58}
+.feature ol{margin:18px 0 0;padding:0;list-style:none;counter-reset:ph}
+.feature ol li{counter-increment:ph;padding:13px 0 13px 42px;border-top:1px solid var(--line-d);
+  position:relative;font-size:.91rem}
+.feature ol li::before{content:"0" counter(ph);position:absolute;left:0;top:13px;font-family:var(--mono);
+  font-size:.68rem;color:var(--magenta);letter-spacing:.05em;font-weight:500}
+.feature ol li b{color:#fff;font-weight:650;display:block;margin-bottom:2px}
+
+/* ---------- výstupy ---------- */
+.out-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(11px,1.5vw,16px)}
+.out{padding:26px 22px;border-radius:5px;background:#fff;border:2px solid var(--on-paper);
+  transition:.3s var(--ease);position:relative;overflow:hidden}
+.out:hover{transform:translateY(-5px)}
+.out .n{font-family:var(--disp);font-stretch:64%;font-weight:800;font-size:3.1rem;line-height:.78;
+  margin-bottom:16px;display:block;color:var(--c)}
+.out h3{color:var(--on-paper);margin-bottom:8px;font-size:1.05rem}
+.out p{font-size:.89rem;color:var(--on-paper2);line-height:1.52}
+
+/* ---------- timeline ---------- */
+.tl-row{display:grid;grid-template-columns:148px 20px minmax(0,1fr);gap:18px;align-items:start;
+  padding-block:17px;border-bottom:1px solid var(--line-d)}
+.tl-row:last-child{border-bottom:0}
+.tl-row .d{font-family:var(--mono);font-size:.74rem;color:var(--on-dark3);padding-top:3px}
+.tl-row .dot{position:relative;padding-top:8px}
+.tl-row .dot i{width:9px;height:9px;border-radius:50%;background:var(--on-dark4);display:block;position:relative;z-index:1}
+.tl-row .dot::before{content:"";position:absolute;left:4px;top:8px;bottom:-25px;width:1px;background:var(--line-d)}
+.tl-row:last-child .dot::before{display:none}
+.tl-row.done .d,.tl-row.done .t{color:var(--on-dark4)}
+.tl-row.done .d{text-decoration:line-through}
+.tl-row.now .dot i{background:var(--lime);box-shadow:0 0 0 5px rgba(201,242,77,.2)}
+.tl-row.now .t{color:#fff;font-weight:600}
+.tl-row .t{font-size:.97rem;color:var(--on-dark2)}
+.tl-row .t small{display:block;font-size:.82rem;color:var(--on-dark4);margin-top:2px}
+@media (max-width:640px){.tl-row{grid-template-columns:100px 18px minmax(0,1fr);gap:12px}}
+
+/* ---------- registrace: plný barevný blok ---------- */
+.reg{background:var(--vermilion);color:#fff}
+.reg h2,.reg h3{color:#fff}
+.reg .eyebrow{color:rgba(255,255,255,.75)}
+.reg .lede{color:rgba(255,255,255,.92)}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:clamp(12px,1.8vw,18px)}
+.price{padding:clamp(22px,3vw,32px);border-radius:5px;background:rgba(8,8,11,.82);
+  display:flex;flex-direction:column;gap:13px;transition:.3s var(--ease)}
+.price:hover{transform:translateY(-5px)}
+.price.hot{background:var(--lime);color:var(--ink)}
+.price.past{background:rgba(8,8,11,.55);opacity:.8}
+.price .pl{font-family:var(--mono);font-size:.63rem;letter-spacing:.19em;text-transform:uppercase;opacity:.8}
+.price .pv{font-family:var(--disp);font-stretch:64%;font-weight:800;
+  font-size:clamp(2.1rem,4.4vw,3.2rem);line-height:.86;color:#fff}
+.price.hot .pv{color:var(--ink)}
+.price .pv sup{font-size:.29em;font-weight:650;vertical-align:super;margin-left:.3em;letter-spacing:.06em}
+.price .pd{font-size:.89rem;line-height:1.48;opacity:.9}
+.price .pd b{font-weight:650}
+.price .pn{font-size:.76rem;margin-top:auto;padding-top:11px;border-top:1px solid rgba(255,255,255,.16);opacity:.6}
+.price.hot .pn{border-top-color:rgba(8,8,11,.2)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:4px;
+  font-weight:650;font-size:.97rem;transition:.28s var(--ease)}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#fff;color:var(--ink);transform:translateY(-2px)}
+.btn-ghost{border:2px solid rgba(255,255,255,.55);color:#fff}
+.btn-ghost:hover{background:#fff;color:var(--vermilion);border-color:#fff}
+.btn-row{display:flex;flex-wrap:wrap;gap:11px;margin-top:clamp(24px,3.4vw,36px)}
+
+/* ---------- místo ---------- */
+.venue{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(16px,2.6vw,32px);align-items:stretch}
+.venue-card{padding:clamp(24px,3vw,36px);border-radius:5px;background:var(--ink2);border:1px solid var(--line-d)}
+.venue-card .addr{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.3rem,2.4vw,1.95rem);color:#fff;line-height:1.02;margin-bottom:12px}
+.venue-map{border-radius:5px;overflow:hidden;position:relative;min-height:280px;
+  background:url("assets/img/planes.webp") center/cover;display:grid;place-items:center}
+.venue-map::before{content:"";position:absolute;inset:0;background:rgba(4,6,12,.45)}
+.venue-map .pin{position:relative;z-index:1;text-align:center}
+.venue-map .pin i{display:block;width:14px;height:14px;border-radius:50%;background:var(--vermilion);
+  margin:0 auto 12px;box-shadow:0 0 0 0 rgba(255,59,31,.65);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 28px rgba(255,59,31,0)}100%{box-shadow:0 0 0 0 rgba(255,59,31,0)}}
+.venue-map .pin span{font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+
+/* ---------- partneři ---------- */
+.part-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:11px}
+.part{padding:24px 20px;border-radius:5px;background:#fff;border:2px solid var(--on-paper);
+  display:flex;flex-direction:column;gap:7px;transition:.3s var(--ease)}
+.part:hover{transform:translateY(-4px)}
+.part .pk{font-family:var(--mono);font-size:.58rem;letter-spacing:.19em;text-transform:uppercase;color:var(--c)}
+.part .pn2{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:1.22rem;color:var(--on-paper);line-height:1}
+.part p{font-size:.84rem;color:var(--on-paper3);line-height:1.48}
+.committee{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.committee span{padding:9px 15px;border-radius:2px;border:1px solid var(--on-paper);
+  font-size:.85rem;color:var(--on-paper);background:transparent}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(4,4,6,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.modal.open{display:flex;animation:fade .3s var(--ease)}
+.modal-card{max-width:740px;width:100%;max-height:88vh;overflow-y:auto;position:relative;
+  background:var(--paper);color:var(--on-paper2);border-radius:6px;padding:0 0 clamp(26px,4vw,44px);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.9);animation:pop .38s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.modal-top{height:10px;background:var(--c,var(--vermilion))}
+.modal-in{padding:clamp(24px,3.6vw,44px) clamp(24px,3.6vw,44px) 0}
+.modal-card h3{font-family:var(--disp);font-stretch:68%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.45rem,3vw,2.2rem);color:var(--on-paper);line-height:.95;margin-bottom:7px}
+.modal-card .mrole{font-size:.9rem;color:var(--on-paper3);margin-bottom:20px;font-weight:500}
+.modal-card .mtalk{padding:18px 20px;background:var(--c,var(--vermilion));color:var(--on-c,#fff);
+  border-radius:4px;margin-bottom:20px}
+.modal-card .mtalk .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.19em;text-transform:uppercase;
+  margin-bottom:6px;opacity:.75}
+.modal-card .mtalk p{font-size:1.01rem;font-weight:650;line-height:1.34}
+.modal-card .mbio{font-size:.94rem;line-height:1.66;color:var(--on-paper2)}
+.modal-card .mbio p+p{margin-top:.95rem}
+.modal-x{position:absolute;top:22px;right:16px;width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;background:rgba(8,8,11,.1);color:var(--on-paper);font-size:1rem;transition:.24s}
+.modal-x:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
+
+/* ---------- footer ---------- */
+footer{background:var(--ink);padding-block:0 28px;position:relative}
+.foot-strip{height:12px;background:url("assets/img/collage.webp") center/cover}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(auto-fit,minmax(145px,1fr));
+  gap:clamp(22px,4vw,48px);margin-block:clamp(44px,6vw,76px) 40px}
+.foot-grid h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.19em;text-transform:uppercase;
+  color:var(--on-dark4);margin-bottom:13px;font-weight:500}
+.foot-grid ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.foot-grid ul a{font-size:.89rem;color:var(--on-dark3);transition:color .2s}
+.foot-grid ul a:hover{color:#fff}
+.foot-logo{font-family:var(--disp);font-stretch:64%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(1.5rem,3vw,2.3rem);color:#fff;line-height:.92;margin-bottom:14px;max-width:16ch}
+.foot-bot{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;padding-top:24px;
+  border-top:1px solid var(--line-d);font-size:.79rem;color:var(--on-dark4)}
+.foot-bot a{color:var(--lime)}
+@media (max-width:560px){h1 .ln{font-size:clamp(2.1rem,12vw,3.4rem)}.g2{grid-template-columns:1fr}}
+</style>
+<noscript><style>.rv{opacity:1 !important;transform:none !important}</style></noscript>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+
+<nav id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <span class="mark"><img src="assets/afcea-logo.png" alt="AFCEA"/></span>
+      <span class="txt">IIČR<span>2. ročník · 2026</span></span>
+    </a>
+    <button class="burger" id="burger" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div class="navlinks" id="navlinks">
+      <a href="#mise">Mise</a>
+      <a href="#pilire">Suverenita × odolnost</a>
+      <a href="#program">Program</a>
+      <a href="#recnici">Řečníci</a>
+      <a href="#vystupy">Výstupy</a>
+      <a href="#misto">Místo</a>
+      <a href="#registrace" class="cta">Registrace</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="hero-meta">
+      <span class="chip v">Čtvrtek 19. listopadu 2026</span>
+      <span class="chip l">2. ročník</span>
+      <span class="chip o">CEVRO Univerzita · Praha 1</span>
+    </div>
+    <h1 class="title">
+      <img class="hero-obj" id="heroObj" src="assets/img/obj-fork.webp" alt="" aria-hidden="true"/>
+      <span class="ln">Informace,</span>
+      <span class="ln">inteligence,</span>
+      <span class="ln fill">čas rozhodnutí</span>
+    </h1>
+    <p class="hero-sub">Suverenita a odolnost státu v éře umělé inteligence. <b>Naše země se rozhoduje rychleji, než rozumí.</b></p>
+    <div class="hero-bottom">
+      <div class="hero-facts">
+        <div class="fact"><div class="k">Pořádá</div><div class="v">AFCEA ČR<small>Pracovní skupina Intelligence</small></div></div>
+        <div class="fact"><div class="k">Hostitel</div><div class="v">CEVRO<small>Jungmannova 17, Praha 1</small></div></div>
+        <div class="fact"><div class="k">Rozsah</div><div class="v">9:00–18:00<small>Jeden den, dva bloky, panel</small></div></div>
+      </div>
+      <div class="cd" id="cd" aria-label="Odpočet do konference">
+        <div class="unit"><div class="n" id="cd-d">—</div><div class="u">dní</div></div>
+        <div class="unit"><div class="n" id="cd-h">—</div><div class="u">hodin</div></div>
+        <div class="unit"><div class="n" id="cd-m">—</div><div class="u">minut</div></div>
+        <div class="unit sec"><div class="n" id="cd-s">—</div><div class="u">sekund</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="band" aria-hidden="true"><div class="band-track" id="band"></div></div>
+
+<!-- ================= MISE ================= -->
+<section class="paper" id="mise">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Mise konference</span>
+      <h2 class="disp">Limitem není technologie.<br/>Limitem je absorpční<br/>kapacita institucí.</h2>
+    </div>
+    <div class="mission-grid">
+      <div class="mission-body">
+        <p class="pullquote rv">Technologie zkrátily čas na rozhodnutí, aniž by zkrátily čas potřebný k <em>pochopení situace</em>.</p>
+        <div class="rv d1" style="margin-top:26px">
+          <p>A právě do této mezery padají chyby, které si dnes už nemůžeme dovolit. Konference vychází z předpokladu, že limitem není dostupnost technologie, ale absorpční kapacita institucí a lidí, kteří s ní mají rozhodovat.</p>
+          <p>Cestou k lepším rozhodnutím jsou <strong>sdílené znalostní vrstvy</strong>. Ne další systém a ne další report, ale společný kontext, do kterého vidí všichni zúčastnění — s různými prioritami, kompetencemi, odpovědnostmi i mindsety. Na konkrétních situacích, mimo jiné na přípravě <strong>Host Nation Support</strong>, chceme ukázat, že bez sdíleného obrazu situace nelze spor o suverenitu a odolnost vést vědomě, natož jej rozhodnout včas.</p>
+          <p>Na této vrstvě chceme iniciovat metodiku tvorby <strong>AI agentů a koučů</strong>, kteří rozhodovací proces moderují: směřují pozornost ke klíčovým tématům, nastolují otázky, které nikdo nechce položit, a odpovídají na otázky související, ale podružné, aby lidé měli kapacitu na ty hlavní. Agenti patří tam, kde posilují kritickou infrastrukturu i kritické myšlení — nikoli tam, kde je nahrazují.</p>
+          <p>Z toho plyne otázka, kterou konference považuje za nejdůležitější: <strong>co je dnes vlastně inteligence.</strong> Stroj obstará kapacitu, rychlost, paměť i absorpci. Neobstará formulaci otázky a hodnotový rámec, ve kterém dává odpověď smysl.</p>
+        </div>
+      </div>
+      <aside class="qcard rv d2">
+        <div class="qstrip"></div>
+        <div class="qa"><h4>Jak si udržet právo rozhodovat v éře AI?</h4><p>Dokáže si stát udržet kontrolu nad svými procesy, když klíčové analytické moduly dodávají zahraniční firmy?</p></div>
+        <div class="qa"><h4>Jak se nestát rukojmím cizích technologií?</h4><p>Závislost dává někomu jinému právo veta nad naším rozhodnutím. Tam, kde to platí, musíme být suverénní.</p></div>
+        <div class="qa"><h4>Jak proměnit krizi v budoucí sílu?</h4><p>Antifragilita — schopnost státu nejen ustát krize a útoky, ale vyjít z nich silnější.</p></div>
+        <div class="qa"><h4>Neztrácejme čas teorií.</h4><p>Mluvme o tom, co musíme udělat dnes, abychom zítra nebyli jen pasivními diváky. Čas rozhodnutí je teď.</p></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PILÍŘE ================= -->
+<section id="pilire">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" style="color:var(--cyan)">Dvě síly každého strategického rozhodnutí</span>
+      <h2 class="disp">Suverenita je, co chceme.<br/>Odolnost je, co musíme.</h2>
+      <p class="lede">Suverenita rozšiřuje prostor volby, odolnost chrání dosažené. Většina reálných sporů mezi resorty, dodavateli a partnery je ve skutečnosti sporem o směnný kurz mezi nimi — jen se tak nepojmenovává. Rozlišení mezi nimi není akademické, ale provozní.</p>
+    </div>
+
+    <div class="pill-switch rv d1" role="tablist">
+      <button class="on" data-pill="0" role="tab">Suverenita — co chceme</button>
+      <button data-pill="1" role="tab">Odolnost — co musíme</button>
+    </div>
+
+    <div class="pill-panels">
+      <div class="pill-panel on" data-panel="0">
+        <div class="pill-top">
+          <div class="pill-word">
+            <img src="assets/img/obj-shield.webp" alt="" aria-hidden="true"/>
+            <span class="w">Suverenita</span>
+            <span class="sub" style="color:var(--cobalt)">Kde závislost dává jiným právo veta</span>
+          </div>
+          <div>
+            <p class="lede" style="font-size:1.04rem">Schopnost jednat bez cizího svolení, formulovat si vlastní zadání a určovat vlastní tempo. Suverénní musíme být přesně tam, kde by závislost znamenala, že o našem rozhodnutí rozhoduje někdo jiný.</p>
+            <div class="stat-row">
+              <div class="stat"><div class="sv" data-count="6" style="color:var(--cobalt)">0</div><div class="sk">oblastí, kde nelze ustoupit</div></div>
+              <div class="stat"><div class="sv" data-count="24" style="color:var(--cobalt)">0</div><div class="sk">témat programu</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pill-list" style="--bc:var(--cobalt)">
+          <div class="pill-item"><span class="num">01</span><p><b>Vlastní obraz reality</b> v datech o nás samých — ne obraz, který nám o nás zprostředkuje někdo jiný.</p></div>
+          <div class="pill-item"><span class="num">02</span><p><b>Kryptografický kořen důvěry</b> — identita, podpisy a ověřování pod vlastní kontrolou.</p></div>
+          <div class="pill-item"><span class="num">03</span><p><b>Schopnost ověřit cizí model</b> dřív, než mu svěříme rozhodnutí o člověku.</p></div>
+          <div class="pill-item"><span class="num">04</span><p><b>Právo určit hranici</b> mezi strojem a člověkem — kde končí automatizace a začíná úsudek.</p></div>
+          <div class="pill-item"><span class="num">05</span><p><b>Kontrola nad tempem adopce</b> — nasazovat podle vlastní připravenosti, ne podle cizího release plánu.</p></div>
+          <div class="pill-item"><span class="num">06</span><p><b>Právo odejít od dodavatele</b> bez ztráty funkce.</p></div>
+        </div>
+        <div class="pill-note" style="background:var(--cobalt)"><p style="color:#fff"><strong style="color:#fff">Suverenita je drahá, a proto se musí přidělovat.</strong> Kdo ji chce mít ve všem, nemá ji nikde.</p></div>
+      </div>
+
+      <div class="pill-panel" data-panel="1">
+        <div class="pill-top">
+          <div class="pill-word">
+            <img src="assets/img/obj-knot.webp" alt="" aria-hidden="true"/>
+            <span class="w">Odolnost</span>
+            <span class="sub" style="color:var(--lime)">Kde je závislost přijatelná, ale výpadek nesmí kaskádovat</span>
+          </div>
+          <div>
+            <p class="lede" style="font-size:1.04rem">Schopnost vydržet šok, degradovat řízeně místo kolapsu a vyjít z krize poučeni, ne jen obnoveni. Odolnost je štít chránící suverenitu — suverenita státu bez základní odolnosti je jen iluze.</p>
+            <div class="stat-row">
+              <div class="stat"><div class="sv" data-count="6" style="color:var(--lime)">0</div><div class="sk">vrstev, které nesmí spadnout</div></div>
+              <div class="stat"><div class="sv" data-count="21" style="color:var(--lime)">0</div><div class="sk">řečníků a moderátorů</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="pill-list" style="--bc:var(--lime)">
+          <div class="pill-item"><span class="num">01</span><p><b>Výpočetní kapacita</b> — dostupná i ve chvíli, kdy je jí globálně nedostatek.</p></div>
+          <div class="pill-item"><span class="num">02</span><p><b>Špičkové modely</b> — přístup, který nezmizí s jedním obchodním rozhodnutím.</p></div>
+          <div class="pill-item"><span class="num">03</span><p><b>Energie</b> — bez ní nejsou data, bez dat není obraz situace.</p></div>
+          <div class="pill-item"><span class="num">04</span><p><b>Konektivita</b> — propojení, které vydrží degradaci i cílený útok.</p></div>
+          <div class="pill-item"><span class="num">05</span><p><b>Fyzické řetězce</b> — dodávky, logistika, Host Nation Support.</p></div>
+          <div class="pill-item"><span class="num">06</span><p><b>Institucionální paměť</b> — znalost, která neodejde s člověkem ani se změnou vlády.</p></div>
+        </div>
+        <div class="pill-note" style="background:var(--lime)"><p><strong>Suverénní musíme být přesně v tom, co stroj neumí — a odolní ve všem, co umí lépe než my.</strong></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OTÁZKY ================= -->
+<section class="questions">
+  <div class="wrap">
+    <span class="eyebrow rv" style="color:var(--lime)">Provokativní otázky, které na konferenci padnou</span>
+    <div class="q-stage" id="qstage"></div>
+    <div class="q-dots" id="qdots"></div>
+  </div>
+</section>
+
+<!-- ================= PÁS: SDÍLENÝ OBRAZ ================= -->
+<div class="picband">
+  <img class="bg" src="assets/img/planes.webp" alt="" aria-hidden="true"/>
+  <div class="wrap">
+    <h2 class="disp rv">Sdílený obraz situace</h2>
+    <p class="lede rv d1" style="margin-inline:auto">Ne další systém a ne další report. Společný kontext, do kterého vidí všichni zúčastnění — s různými prioritami, kompetencemi i odpovědnostmi. Bez něj nelze spor o suverenitu a odolnost vést vědomě, natož jej rozhodnout včas.</p>
+  </div>
+</div>
+
+<!-- ================= PROGRAM ================= -->
+<section class="paper" id="program">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Program 19. 11. 2026</span>
+      <h2 class="disp">Jeden den.<br/>Dva bloky. Jedna otázka.</h2>
+      <p class="lede">Dopoledne otevíráme rámec — kognitivní suverenitu státu a člověka v něm. Odpoledne jdeme do exekuce — strategická suverenita, technologie, obrana a kapacita státu jednat. Den uzavírá panel a networking.</p>
+    </div>
+    <div class="prog-filters rv d1" id="filters"></div>
+    <div id="program-body"></div>
+    <div class="prog-note rv">
+      <strong>Poznámka k časům:</strong> rámec dne je 9:00–18:00. Přesné pořadí a minutáž jednotlivých příspěvků programový výbor dokončuje — publikované bloky a řečníci jsou potvrzení. Detail příspěvku zobrazíte kliknutím na řádek.
+    </div>
+  </div>
+</section>
+
+<!-- ================= ŘEČNÍCI ================= -->
+<section id="recnici">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" style="color:var(--magenta)">Kdo mluví</span>
+      <h2 class="disp">Zpravodajci, rektoři,<br/>právníci, psychologové,<br/>lidé, co staví systémy.</h2>
+      <p class="lede">Konference záměrně míchá světy, které se běžně nepotkávají: zpravodajskou komunitu, akademii, obranný průmysl, policii, regulátora a lidi, kteří AI systémy skutečně staví a nasazují. Barva karty ukazuje téma. Klikněte pro celý profil.</p>
+    </div>
+    <div class="spk-grid" id="spk-grid"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</section>
+
+<!-- ================= PODCAST + AI ================= -->
+<section style="background:var(--ink2)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" style="color:var(--amber)">Konference nezačíná ráno 19. listopadu</span>
+      <h2 class="disp">Sdílený obraz<br/>skládáme předem.</h2>
+      <p class="lede">Dvě věci odlišují druhý ročník od běžné konference: podcast, který staví společný kontext ještě před akcí, a AI spolumoderátor, který během dne skládá mapu debaty v reálném čase.</p>
+    </div>
+    <div class="dual">
+      <div class="feature rv d1">
+        <img class="obj" src="assets/img/obj-ripple.webp" alt="" aria-hidden="true"/>
+        <h3>Podcast „Čas rozhodnutí“</h3>
+        <p>Série, která před konferencí skládá sdílený obraz — a po ní ho dotáhne do výstupu. Moderují Jakub Bareš a Aleš Špidla.</p>
+        <ol>
+          <li><b>Fáze 1 — Medailonky</b>Krátké selfie medailonky řečníků do 60 sekund. Kdo přijde a proč to téma bere osobně.</li>
+          <li><b>Fáze 2 — Sólo rozhovory</b>3–5minutové rozhovory online, minimálně pět dílů mezi 8. říjnem a 5. listopadem 2026.</li>
+          <li><b>Fáze 3 — Dvojice a dohra</b>Debaty dvou řečníků a díly napříč skupinami AFCEA — až po konferenci, nad jejími výsledky.</li>
+        </ol>
+      </div>
+      <div class="feature rv d2">
+        <img class="obj scr" src="assets/img/obj-sphere.webp" alt="" aria-hidden="true"/>
+        <h3>AI spolumoderátor</h3>
+        <p>Vedle dvou lidských moderátorů běží třetí, strojový: agent, který v průběhu dne skládá <strong>živou mapu debaty</strong> — kdo co řekl, kde se argumenty protínají, kde si odporují a která otázka zůstala nezodpovězená.</p>
+        <p style="margin-top:14px">Není to efekt. Je to ukázka přesně té metodiky, kterou konference navrhuje: agent, který moderuje rozhodovací proces, směřuje pozornost ke klíčovým tématům a nastoluje otázky, které nikdo nechce položit.</p>
+        <p style="margin-top:14px" class="tiny">Mapu debaty dostanou účastníci po konferenci jako podklad pro policy paper.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VÝSTUPY ================= -->
+<section class="paper" id="vystupy">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Co po konferenci zbyde</span>
+      <h2 class="disp">Konference, která<br/>končí dokumentem,<br/>ne potleskem.</h2>
+      <p class="lede">Druhý ročník je navržen jako pracovní formát. Výstupem není sborník, ale materiál, se kterým lze jít na jednání — a stanovisko, za kterým stojí odborná komunita.</p>
+    </div>
+    <div class="out-grid">
+      <div class="out rv d1" style="--c:var(--vermilion)"><span class="n">01</span><h3>Sdílený obraz situace</h3><p>Společný kontext k tématu suverenity a odolnosti, do kterého vidí všichni zúčastnění. Kdokoliv jde na důležité jednání, má odkud vyjít.</p></div>
+      <div class="out rv d2" style="--c:var(--cobalt)"><span class="n">02</span><h3>Policy paper</h3><p>Materiál opřený o stanovisko AFCEA a o to, co na konferenci skutečně zaznělo — ne o dojmy z kuloárů.</p></div>
+      <div class="out rv d3" style="--c:var(--magenta)"><span class="n">03</span><h3>Memorandum</h3><p>Dohoda o dalším postupu mezi zúčastněnými stranami, sepsaná bezprostředně po konferenci, dokud je téma živé.</p></div>
+      <div class="out rv d4" style="--c:var(--amber)"><span class="n">04</span><h3>Podnět pro RVIS</h3><p>Problematika, která přesahuje jednotlivý resort, potřebuje adresáta nad resorty. Výstup míří na Radu vlády pro informační společnost.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TIMELINE ================= -->
+<section>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" style="color:var(--lime)">Kde jsme</span>
+      <h2 class="disp">Cesta k 19. listopadu</h2>
+    </div>
+    <div class="rv d1">
+      <div class="tl-row done"><div class="d">30. 7. 2026</div><div class="dot"><i></i></div><div class="t">Uzávěrka abstraktů<small>Výzva k přihlášení příspěvků uzavřena</small></div></div>
+      <div class="tl-row done"><div class="d">31. 7. 2026</div><div class="dot"><i></i></div><div class="t">Konec Early Bird registrace<small>Zvýhodněné vstupné skončilo</small></div></div>
+      <div class="tl-row done"><div class="d">30. 8. 2026</div><div class="dot"><i></i></div><div class="t">Schválení příspěvků<small>Programový výbor potvrdil zařazené příspěvky</small></div></div>
+      <div class="tl-row now"><div class="d">8. 10. – 5. 11.</div><div class="dot"><i></i></div><div class="t">Podcast „Čas rozhodnutí“<small>Medailonky řečníků a sólo rozhovory, minimálně pět dílů</small></div></div>
+      <div class="tl-row"><div class="d">19. 11. 2026</div><div class="dot"><i></i></div><div class="t">Konference<small>9:00–18:00, CEVRO Univerzita, Jungmannova 17, Praha 1</small></div></div>
+      <div class="tl-row"><div class="d">prosinec 2026</div><div class="dot"><i></i></div><div class="t">Memorandum a policy paper<small>Zpracování výstupů, dohra podcastu, podnět pro RVIS</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REGISTRACE ================= -->
+<section class="reg" id="registrace">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Registrace</span>
+      <h2 class="disp">Vstupenky na 2. ročník</h2>
+      <p class="lede">Early Bird registrace skončila 31. července 2026. Aktuálně platí standardní vstupné. Členové AFCEA, pedagogové, studenti a absolventi CEVRO Univerzity mají zvýhodněnou cenu.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price hot rv d1">
+        <div class="pl">Standardní · zvýhodněné</div>
+        <div class="pv">1 200<sup>Kč</sup></div>
+        <div class="pd"><b>Členové AFCEA</b> · pedagogové, studenti a absolventi CEVRO Univerzity</div>
+        <div class="pn">Cena s DPH. Platí po 31. 7. 2026.</div>
+      </div>
+      <div class="price rv d2">
+        <div class="pl">Standardní</div>
+        <div class="pv">2 400<sup>Kč</sup></div>
+        <div class="pd"><b>Ostatní účastníci</b> · plné vstupné na celý den včetně networkingu</div>
+        <div class="pn">Cena s DPH. Platí po 31. 7. 2026.</div>
+      </div>
+      <div class="price past rv d3">
+        <div class="pl">Early Bird — uzavřeno</div>
+        <div class="pv">800<sup>Kč</sup></div>
+        <div class="pd">Členové AFCEA / 1 000 Kč ostatní</div>
+        <div class="pn">Registrace ukončena 31. 7. 2026.</div>
+      </div>
+    </div>
+    <div class="btn-row rv d4">
+      <a class="btn btn-primary" href="mailto:ps07@afcea.cz?subject=Konference%20IIR%202026%20%E2%80%93%20registrace">Registrovat se → ps07@afcea.cz</a>
+      <a class="btn btn-ghost" href="#program">Prohlédnout program</a>
+    </div>
+    <p class="rv d5" style="margin-top:20px;max-width:60ch;font-size:.83rem;color:rgba(255,255,255,.75)">Registrace probíhá e-mailem přes sekretariát pracovní skupiny. Do zprávy uveďte jméno, organizaci, pozici a fakturační údaje; u zvýhodněné ceny členství v AFCEA nebo vztah k CEVRO Univerzitě.</p>
+  </div>
+</section>
+
+<!-- ================= MÍSTO ================= -->
+<section id="misto">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" style="color:var(--cyan)">Místo konání</span>
+      <h2 class="disp">CEVRO Univerzita,<br/>Praha 1</h2>
+    </div>
+    <div class="venue">
+      <div class="venue-card rv d1">
+        <div class="addr">Jungmannova 17<br/>110 00 Praha 1</div>
+        <p class="lede" style="font-size:1rem;margin-bottom:18px">V centru Prahy, pár minut od Můstku a Národní. Hostitelem druhého ročníku je opět CEVRO Univerzita — akademický partner konference a místo, kde první ročník v listopadu 2025 začal.</p>
+        <hr class="rule" style="margin-block:18px"/>
+        <div class="grid g2" style="gap:18px">
+          <div><div class="mono" style="color:var(--on-dark4);margin-bottom:4px">DATUM</div><strong>čtvrtek 19. 11. 2026</strong></div>
+          <div><div class="mono" style="color:var(--on-dark4);margin-bottom:4px">ČAS</div><strong>9:00 — 18:00</strong></div>
+          <div><div class="mono" style="color:var(--on-dark4);margin-bottom:4px">JAZYK</div><strong>čeština</strong></div>
+          <div><div class="mono" style="color:var(--on-dark4);margin-bottom:4px">KONTAKT</div><a href="mailto:ps07@afcea.cz"><strong>ps07@afcea.cz</strong></a></div>
+        </div>
+      </div>
+      <div class="venue-map rv d2"><div class="pin"><i></i><span>Jungmannova 17 · Praha 1</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARTNEŘI ================= -->
+<section class="paper" id="partneri">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Kdo za konferencí stojí</span>
+      <h2 class="disp">Pořadatelé a partneři</h2>
+    </div>
+    <div class="part-grid">
+      <div class="part rv d1" style="--c:var(--vermilion)"><div class="pk">Pořadatel</div><div class="pn2">AFCEA<br/>Česká pobočka</div><p>Pracovní skupina Intelligence (PS07), působící od roku 2018. Konference je akcí pracovní skupiny; na programu se podílí expertní tým kGovernment.</p></div>
+      <div class="part rv d2" style="--c:var(--cobalt)"><div class="pk">Akademický partner · hostitel</div><div class="pn2">CEVRO<br/>Univerzita</div><p>Místo konání obou ročníků. Partner v oblasti vzdělávání v kybernetické bezpečnosti a ochraně informací.</p></div>
+      <div class="part rv d3" style="--c:var(--magenta)"><div class="pk">Hlavní partner</div><div class="pn2">Czechoslovak<br/>Group</div><p>Hlavní partner druhého ročníku konference.</p></div>
+      <div class="part rv d4" style="--c:var(--amber)"><div class="pk">Partner</div><div class="pn2">Tovek</div><p>Technologie pro podporu rozhodování, analýzu informací a práci se znalostmi.</p></div>
+    </div>
+    <div style="margin-top:clamp(34px,4.6vw,58px)" class="rv">
+      <span class="eyebrow">Programový výbor</span>
+      <div class="committee">
+        <span>Mgr. BcA. Jakub Bareš</span><span>Mgr. Jiří Š. Cieslar</span><span>Ing. Tomáš Müller</span>
+        <span>Ing. Aleš Špidla</span><span>Ing. Tomáš Vejlupek</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="foot-strip"></div>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">Informace,<br/>inteligence,<br/>čas rozhodnutí</div>
+        <p class="tiny" style="max-width:38ch">2. ročník odborné konference. 19. listopadu 2026, CEVRO Univerzita, Jungmannova 17, Praha 1. Pořádá pracovní skupina Intelligence České pobočky AFCEA.</p>
+        <p class="mono" style="margin-top:16px"><a href="mailto:ps07@afcea.cz" style="color:var(--lime)">ps07@afcea.cz</a></p>
+      </div>
+      <div><h4>Konference</h4><ul>
+        <li><a href="#mise">Mise</a></li><li><a href="#pilire">Suverenita × odolnost</a></li>
+        <li><a href="#program">Program</a></li><li><a href="#recnici">Řečníci</a></li></ul></div>
+      <div><h4>Praktické</h4><ul>
+        <li><a href="#registrace">Registrace a ceny</a></li><li><a href="#misto">Místo konání</a></li>
+        <li><a href="#vystupy">Výstupy</a></li><li><a href="#partneri">Partneři</a></li></ul></div>
+      <div><h4>Odkazy</h4><ul>
+        <li><a href="https://afcea.cz" target="_blank" rel="noopener">afcea.cz</a></li>
+        <li><a href="https://afcea.cz/o-nas-ps07" target="_blank" rel="noopener">PS07 Intelligence</a></li>
+        <li><a href="https://www.cevro.cz" target="_blank" rel="noopener">cevro.cz</a></li></ul></div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 AFCEA Česká pobočka · CEVRO Univerzita</span>
+      <span>2. ročník · 19. 11. 2026</span>
+      <span>Kontakt: <a href="mailto:ps07@afcea.cz">ps07@afcea.cz</a></span>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modal-card">
+    <div class="modal-top" id="modal-top"></div>
+    <button class="modal-x" id="modal-x" aria-label="Zavřít">✕</button>
+    <div class="modal-in" id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const THEMES = {
+  kog:  "Kognitivní suverenita",
+  str:  "Strategická suverenita",
+  zpr:  "Zpravodajství a obrana",
+  aid:  "AI, data a agenti",
+  prv:  "Právo a regulace",
+  clv:  "Odolnost člověka"
+};
+
+const PEOPLE = [
+  {
+    id:"muller", ini:"TM", cls:"mod", blk:"open", th:"str",
+    n:"Ing. Tomáš Müller", r:"Prezident, AFCEA Česká pobočka",
+    t:"Úvodní slovo za AFCEA",
+    b:"Pracuje ve vysokých manažerských pozicích a specializuje se na přípravu a realizaci časově a operačně kritických ICT projektů a aplikací pro obranně bezpečnostní segment a kritickou infrastrukturu. Od roku 2016 je prezidentem České pobočky AFCEA. Aktivně se podílí na akcích s cílem zvyšovat schopnosti odborné komunity ve prospěch obrany a bezpečnosti ČR — především v oblastech komunikačních a informačních systémů, kybernetické bezpečnosti a obrany, ochrany měkkých cílů a kognitivního válčení."
+  },
+  {
+    id:"vejlupek", ini:"TV", cls:"mod", blk:"open", th:"str",
+    n:"Ing. Tomáš Vejlupek", r:"Tovek · předseda pracovní skupiny Intelligence, AFCEA ČR",
+    t:"Úvodní slovo za pracovní skupinu Intelligence",
+    b:"Zakladatel a člen dozorčí rady společnosti Tovek. Zajímá se o procesy vzniku, sdílení a využívání informací pro rozhodování jednotlivců a organizací. Podílí se na návrhu technologických řešení pro podporu rozhodování v oblasti bezpečnosti a řízení organizací."
+  },
+  {
+    id:"spidla", ini:"AŠ", cls:"mod", blk:"open", th:"str",
+    n:"Ing. Aleš Špidla", r:"CEVRO Univerzita · spolumoderátor konference",
+    t:"Moderace konference a panelových diskusí",
+    b:"Vystudoval technickou kybernetiku. Jako ředitel odboru kybernetické bezpečnosti na MV ČR koncipoval strategii kybernetické bezpečnosti České republiky a podílel se na tvorbě zákona o kybernetické bezpečnosti. Pracoval jako vedoucí či ředitel odborů bezpečnosti a řízení rizik v řadě státních i komerčních organizací. Do roku 2022 byl prezidentem Českého institutu manažerů informační bezpečnosti. Je garantem a pedagogem MBA programu „Management a kybernetická bezpečnost“ a spolugarantem LL.M programu „Ochrana informací“ na CEVRO. Intenzivně se věnuje evangelizaci kybernetické a informační bezpečnosti ve všech jejích aspektech."
+  },
+  {
+    id:"bares", ini:"JB", cls:"mod", blk:"open", th:"aid",
+    n:"Mgr. BcA. Jakub Bareš", r:"World Health Organization · spolumoderátor konference",
+    t:"Moderace konference a panelových diskusí",
+    b:"Generative AI Strategist ve World Health Organization. Specializuje se na strategické využití generativní AI a agentních systémů pro transformaci institucí, firem a státu — návrh AI-first architektur a governance modelů. Vede expertní tým kGovernment při pracovní skupině Intelligence AFCEA."
+  },
+  {
+    id:"polcak", ini:"RP", cls:"key", blk:"a", th:"prv",
+    n:"prof. JUDr. Radim Polčák, Ph.D.", r:"Prorektor Masarykovy univerzity · Ústav práva a technologií PrF MU",
+    t:"Slyšíte to chroupání? Citlivost, moudrost a dedikovaná kreativita jako etalony národní odolnosti",
+    b:"Prorektor Masarykovy univerzity, profesor na Ústavu práva a technologií Právnické fakulty MU a hostující profesor na Právnické fakultě Georg-August-Universität Göttingen. Zabývá se převážně právem informačních technologií a právní teorií. Založil časopisy Masaryk University Journal of Law and Technology a Revue pro právo a technologie, vede stálou mezinárodní konferenci Cyberspace a je zakládajícím členem Evropského právního institutu. V letech 2017–2018 působil jako zvláštní poradce Evropské komise pro robotiku a ochranu dat. Je rozhodcem tribunálu pro domény .eu a .cz, národním expertem za ČR v AI@OECD, členem Legislativní rady vlády ČR, Rozkladové komise NÚKIB, Poradního panelu ČTÚ k DSA a dozorčí rady CESNET. Autor více než 150 odborných publikací, laureát Právníka roku v kategorii ICT práva a člen Síně slávy Cybersecurity."
+  },
+  {
+    id:"slerka", ini:"JŠ", cls:"key", blk:"a", th:"kog",
+    n:"Mgr. Josef Šlerka, Ph.D.", r:"Vedoucí Studia nových médií, FF Univerzity Karlovy",
+    t:"Případová studie: Boty proti lásce — anatomie jedné informační operace v českém online prostoru",
+    b:"Český sémiotik a odborník na analýzu dat ze sociálních sítí. Vystudoval estetiku a informační vědu na FF UK. Působil jako vedoucí výzkumu a vývoje ve společnosti Ataxo a později v Socialbakers, od roku 2017 do roku 2021 byl ředitelem Nadačního fondu nezávislé žurnalistiky. Průkopník digital humanities, nyní se věnuje využití AI v humanitních vědách. V roce 2014 byl zvolen Osobností roku v rámci cen Křišťálová Lupa. Systematicky se věnuje problematice dezinformací a konspiračních teorií.\n\nPříspěvek je praktickým průvodcem tím, jak vytvořit botnet, spravovat ho a nasadit do českého informačního prostředí — aneb jak jsem se naučil mít rád boty a přestal se bát AI."
+  },
+  {
+    id:"kolomaznik", ini:"TK", blk:"a", th:"kog",
+    n:"PhDr. Tomáš Kolomazník", r:"Katedra bezpečnostních studií, CEVRO Univerzita · Center for Security Consulting",
+    t:"Nástroje státu na čelení dopadů Slopagandy v éře umělé inteligence",
+    b:"Vyučuje na CEVRO Univerzitě na Katedře bezpečnostních studií. Je spoluzakladatelem a ředitelem poradenské firmy Center for Security Consulting. Věnuje se bezpečnostní politice, obrannému průmyslu, kybernetické a informační bezpečnosti. Je členem bezpečnostní komunity při Geneva Centre for Security Policy Alumni Association. Účastní se mezinárodních projektů, vystupuje na konferencích a publikuje o bezpečnostních tématech doma i v zahraničí. Je spoluautorem publikací Proč věříme dezinformacím? (2024) a Klamy a manipulace napříč staletími (2026)."
+  },
+  {
+    id:"cadova", ini:"LČ", blk:"a", th:"clv",
+    n:"Mgr. Lenka Čadová, Ph.D.", r:"Psycholožka a psychoterapeutka · NEWTON University",
+    t:"Resilience jako ochranný faktor kognitivní autonomie: psychofyziologické základy odolného rozhodování",
+    b:"Psycholožka, psychoterapeutka a vysokoškolská pedagožka na NEWTON University. Ve své odborné práci se zaměřuje na psychickou odolnost, zvládání stresu, kognitivní procesy, rozhodování a leadership v náročných a krizových situacích. Doktorské studium absolvovala na Univerzitě obrany v Brně v oboru Teorie obrany a řízení státu. Dlouhodobě se věnuje psychofyziologii, HRV a rozvoji resilience, se zkušenostmi z bezpečnostního a vojenského prostředí."
+  },
+  {
+    id:"polak", ini:"KP", blk:"a", th:"clv",
+    n:"PhDr. Kamil Polák", r:"Zařízení služeb pro Ministerstvo vnitra ČR · mentální kouč a pedagog",
+    t:"VISIO — kognitivní odolnost jako součást bezpečnosti státu",
+    b:"Lektor a instruktor Zařízení služeb pro Ministerstvo vnitra ČR, mentální kouč a vysokoškolský pedagog. Dlouhodobě se věnuje psychofyzické připravenosti, kognitivní odolnosti, zvládání zátěže a podpoře výkonu člověka v náročném pracovním prostředí. Je autorem metodiky Stillness — Cesta k tajemství klidu a projektů OPTIMA, DETOXIKON a VISIO, které byly oceněny v rámci kampaní EU-OSHA na národní i evropské úrovni.\n\nPříspěvek míří do sekce Index duševní a rozhodovací schopnosti."
+  },
+  {
+    id:"kvapilik", ini:"MK", blk:"a", th:"kog",
+    n:"Mgr. Ing. Martin Kvapilík, FEng.", r:"Manager Quality & IT, TOSHULIN Group",
+    t:"Aristotelova černá labuť",
+    b:"Vystudoval technickou kybernetiku na FE VUT v Brně, teologii na CMTF UP Olomouc a architekturu složitých systémů na MIT. K jeho zájmovým tématům patří problém duše–tělo, AI a interdisciplinarita filozofie, teologie a systémového přístupu."
+  },
+  {
+    id:"snasel", ini:"VS", cls:"key", blk:"a", th:"aid",
+    n:"prof. RNDr. Václav Snášel, CSc.", r:"Rektor VŠB — Technické univerzity Ostrava · výzkumné centrum CLARA",
+    t:"Fiktivní dialog: umělá inteligence a algoritmy v praxi",
+    b:"Rektor VŠB — Technické univerzity Ostrava. Stojí v čele výzkumného centra CLARA (Center for Artificial Intelligence and Quantum Computing in System Brain Research).\n\nMotto příspěvku: „Úspěšná technologie je možná pouze tehdy, pokud dostane realita přednost před vztahy s veřejností, protože přírodu nelze oklamat.“ — Richard Feynman o katastrofě raketoplánu Challenger, 1986."
+  },
+  {
+    id:"sedlacek", ini:"LS", blk:"a", th:"kog",
+    n:"PhDr. Lukáš Sedláček, M.Phil.", r:"Zakladatel ELAI a Týdne inovací · autor knihy Nazí v AI době",
+    t:"Nahý stát v AI době: od zranitelnosti k odpovědnosti v rozhodování",
+    b:"Expert na propojování technologií se společenskými vědami, s více než 20 lety byznysové a 15 lety podnikatelské praxe. Absolvoval Univerzitu Karlovu i University of Cambridge, vedl český spolek absolventů Oxbridge a založil ELAI. Zakladatel a organizátor Týdne inovací — největší události v oblasti AI a inovací ve střední Evropě. Jeho kniha Nazí v AI době, jejíž první náklad se vyprodal během dvou týdnů, otevírá téma identity a smyslu v éře umělé inteligence; byla pozitivně přijata představiteli OSN, Cambridge i OpenAI."
+  },
+  {
+    id:"mlejnek", ini:"PM", cls:"key", blk:"b", th:"zpr",
+    n:"plk. v. v. Ing. Petr Mlejnek, MBA", r:"Bývalý ředitel Úřadu pro zahraniční styky a informace",
+    t:"Nechceme Palantir. Chceme vlastní digitální mozek české armády",
+    b:"Bývalý český voják, zpravodajský důstojník a bezpečnostní expert. Během své profesní kariéry působil řadu let v bezpečnostních a zpravodajských strukturách České republiky, zastával funkci ředitele Úřadu pro zahraniční styky a informace — české civilní zahraniční zpravodajské služby. Profesně se zaměřuje na zpravodajskou činnost, hybridní a informační operace, bezpečnostní politiku, krizové řízení a obranu státu. Ve veřejném prostoru vystupuje jako bezpečnostní analytik a komentátor.\n\nVálka na Ukrajině ukazuje, že o vojenské převaze stále více rozhodují data, umělá inteligence a rychlost rozhodování. Palantir patří ke světové špičce, Česká republika by na něm ale neměla postavit vlastní operační systém. Místo investice přibližně 50 milionů dolarů do zahraniční platformy bychom měli vybudovat vlastní modulární systém založený na existujících českých technologiích. Inspirací je Ukrajina, která Palantir využívá, ale současně rozvíjí vlastní systém Delta. České řešení by mělo propojovat senzory, drony, data, AI a velení a zároveň umožňovat napojení na Palantir a další alianční systémy přes NATO. Nejde o odmítání Palantiru, ale o to, aby digitální mozek české armády zůstal pod českou kontrolou."
+  },
+  {
+    id:"hynek", ini:"JH", cls:"key", blk:"b", th:"str",
+    n:"RNDr. Jiří Hynek", r:"Prezident Asociace obranného a bezpečnostního průmyslu ČR",
+    t:"Jsme připraveni rozhodnout?",
+    b:"Český manažer, politik a ekonomický diplomat v obranně-bezpečnostním sektoru. Vedoucí delegace České republiky při Poradní skupině NATO pro průmysl (NIAG) a od roku 2011 prezident a výkonný ředitel Asociace obranného a bezpečnostního průmyslu ČR.\n\nMálokdo ví, kdo byl Birger Eriksen — velitel pevnosti Oscarsborg, jenž 9. dubna 1940 pronesl větu: „Buď mě vyznamenají, nebo postaví před válečný soud. Pal.“ Díky jeho rozhodnosti se podařilo odvrátit první pokus nacistického Německa obsadit Oslo. Schopnost, ale i ochota rozhodovat je klíčová vlastnost člověka nejen ve vrcholné řídicí pozici. Není dnes potlačena přemírou byrokracie a alibismu? Neprosazují se spíše váhaví střelci, kteří ustanovují komise na kdejakou hloupost jen proto, aby se vyhnuli rozhodnutí? A k čemu nám bude budování resilience bez kompetentních lidí s tahem na branku?"
+  },
+  {
+    id:"dockal", ini:"JD", blk:"b", th:"aid",
+    n:"Ing. Jaroslav Dočkal, CSc.", r:"Střední škola informatiky, poštovnictví a finančnictví Brno",
+    t:"Kdo v řetězci agentů rozhoduje za stát: index narativní divergence a arbitrážní transparentnosti v multiagentních systémech státní správy",
+    b:"Učitel na Střední škole a vyšší odborné škole informatiky a financí v Brně. Zabývá se problematikou kybernetické bezpečnosti, počítačových sítí a umělé inteligence."
+  },
+  {
+    id:"karasek", ini:"JK", blk:"b", th:"zpr",
+    n:"Jindřich Karásek", r:"Rapid7 · vedoucí týmu kybernetické hrozbové analytiky",
+    t:"EOLAS VAULT — zkušenosti s použitím LLM „v poli“ a jak pracovat s kontextem, aby si to moc nevymýšlelo",
+    b:"Vede tým kybernetické hrozbové analytiky ve společnosti Rapid7. Jeho práce se zaměřuje na výzkum pokročilých perzistentních hrozeb (APT), ransomwarových operací, malware rodin a nově se vyvíjejících taktik, technik a postupů protivníků. Překládá komplexní technické poznatky do prakticky využitelné zpravodajské formy pro státní i komerční partnery a zajišťuje tvorbu reportů, pravidel YARA/Sigma, výstupů z analýzy malware a systematické sledování kampaní."
+  },
+  {
+    id:"bergman", ini:"AB", blk:"b", th:"aid",
+    n:"Artur Bergman", r:"CEO & co-founder, KnowYourData · PactusAI",
+    t:"Vaše data zůstávají u vás. Plnohodnotná AI pro odvětví, kde je bezpečnost dat absolutní priorita",
+    b:"Právník, který radši staví produkty, než píše smlouvy. Spolu s parťákem Matúšem Žilincem založil startup PactusAI, kde vyvíjí software pro datovou inteligenci. Dnes ho nasazují banky, pojišťovny a advokátní kanceláře, aby automatizovaly práci s dokumenty a procesy kolem nich i v sektorech, kde je datová bezpečnost absolutní priorita."
+  },
+  {
+    id:"stulikova", ini:"AS", blk:"b", th:"aid",
+    n:"pplk. Anika Stulíková", r:"AI specialistka, Policejní prezidium ČR · členka AI Strategic Group, EUROPOL",
+    t:"", tbd:"Téma příspěvku se dokončuje",
+    b:"Působí jako AI specialistka na Policejním prezidiu ČR v oddělení pro vědu, výzkum a inovace. Koncepčně řídí agendu umělé inteligence a je vedoucí týmu umělé inteligence pod pracovní skupinou Inovace. Zároveň je členkou AI Strategic Group v EUROPOLu a v rámci celoevropského projektu Starlight se podílí na vývoji AI nástrojů pro orgány činné v trestním řízení. V minulosti řídila komunikaci a fundraising v neziskové organizaci; během studií se věnovala politologii, mezinárodním vztahům a umělé inteligenci se zaměřením na komunikaci, etiku a digital humanities. Je podporovatelkou efektivního altruismu se zřetelem na AI Safety, kde působí i dobrovolnicky."
+  },
+  {
+    id:"necas", ini:"MN", blk:"b", th:"prv",
+    n:"Ing. Miroslav Nečas, Ph.D.", r:"Vrchní analytik dozorující využívání AI, Český telekomunikační úřad",
+    t:"", tbd:"Téma příspěvku se dokončuje",
+    b:"Má více než 15 let zkušeností s aplikací pokročilých technologií k podpoře lidského rozhodování v oblastech obrany, tajných služeb a bezpečnosti. Na Českém telekomunikačním úřadu působí jako vrchní analytik dozorující využívání umělé inteligence."
+  },
+  {
+    id:"uher", ini:"MU", blk:"b", th:"zpr",
+    n:"PaedDr. Martin Uher, MBA", r:"Bývalý zpravodajec · Úřad pro zahraniční styky a informace",
+    t:"", tbd:"Téma příspěvku se dokončuje",
+    b:"Zpravodajcem byl více než 25 let. Jeho poslední štací byl Úřad pro zahraniční styky a informace."
+  },
+  {
+    id:"zajicek", ini:"ZZ", cls:"key", blk:"b", th:"str",
+    n:"Mgr. Zdeněk Zajíček", r:"Prezident Hospodářské komory ČR · prezident ICT UNIE",
+    t:"", tbd:"Téma příspěvku se dokončuje",
+    b:"Vystudovaný právník. Již řadu let se zaměřuje na digitalizaci, rozvoj informační společnosti a eGovernment. V současnosti zastává funkci prezidenta Hospodářské komory ČR a je prezidentem ICT UNIE, členem Vládního výboru pro strategické investice a Výboru pro umělou inteligenci zřízeného pod Ministerstvem průmyslu a obchodu ČR v rámci Rady vlády pro informační společnost."
+  }
+];
+
+const BLOCKS = [
+  { id:"open", bid:"Úvod", meta:"Dopoledne · 9:00",
+    d:"Úvodní slova pořadatelů a představení otázky, kterou druhý ročník otevírá." },
+  { id:"a", bid:"Blok A — Kognitivní suverenita", meta:"Dopoledne",
+    d:"Člověk, jeho úsudek a informační prostředí, ve kterém se rozhoduje. Co zůstává neredukovatelně lidské — a jak to chránit." },
+  { id:"b", bid:"Blok B — Strategická suverenita a odolnost", meta:"Odpoledne",
+    d:"Exekutivní kapacita státu, technologie pod vlastní kontrolou, obrana a data. Od popisu problému k tomu, co udělat." },
+  { id:"panel", bid:"Panel a networking", meta:"Závěr dne · do 18:00",
+    d:"Panelová diskuse pod vedením obou moderátorů a strukturovaný networking napříč státní správou, akademií, průmyslem a zpravodajskou komunitou." }
+];
+
+const QUESTIONS = [
+  "Víme o našem státu, jak jsme připraveni na krizi?",
+  "Prošel by stát kyber rozcvičkou?",
+  "Říkají, že jsme v EU mistři v regulaci — tak buďme mistři i v koordinaci.",
+  "Můžeme suverénně rozhodovat, když závisíme na cizích technologiích?",
+  "Je centrální mozek státu bezpečnostní riziko, nebo jediná možná záchrana?",
+  "Spojenectví není podřízenost — ale kde má své meze?",
+  "Zastaví gigafactory letící dron?",
+  "Inteligence je dnes komoditou. Musí vzniknout kognitivní infrastruktura.",
+  "Suverenita bez kontroly jsou koláče bez povidel.",
+  "Máme stále sílu činit vlastní rozhodnutí?"
+];
+
+/* barva a kontrastní text pro každé ze šesti témat */
+const TC = {
+  kog:{c:"#ff2e88",on:"#08080b"}, str:{c:"#2b4dff",on:"#ffffff"}, zpr:{c:"#ff3b1f",on:"#08080b"},
+  aid:{c:"#c9f24d",on:"#08080b"}, prv:{c:"#ffb020",on:"#08080b"}, clv:{c:"#4ad4ff",on:"#08080b"}
+};
+const col = k => TC[k] || TC.zpr;
+</script>
+
+<script>
+const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ===== reveal (globální, aby fungoval i pro prvky vykreslené z JS) ===== */
+const REVEAL_IO = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting){ e.target.classList.add('in'); REVEAL_IO.unobserve(e.target); }
+}), {threshold:.08, rootMargin:'0px 0px -6% 0px'});
+function observeReveal(root){ (root||document).querySelectorAll('.rv:not(.in)').forEach(el => REVEAL_IO.observe(el)); }
+
+/* ===== 1. navigace + progress ===== */
+(function(){
+  const nav=document.getElementById('nav'),prog=document.getElementById('prog');
+  const burger=document.getElementById('burger'),links=document.getElementById('navlinks');
+  const onScroll=()=>{const y=scrollY;nav.classList.toggle('solid',y>40);
+    const h=document.documentElement.scrollHeight-innerHeight;
+    prog.style.width=(h>0?(y/h)*100:0)+'%';};
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  burger.addEventListener('click',()=>links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+})();
+
+/* ===== 2. odpočet ===== */
+(function(){
+  const target=new Date('2026-11-19T09:00:00+01:00').getTime();
+  const pad=n=>String(n).padStart(2,'0');
+  function tick(){
+    let d=target-Date.now(); if(d<0)d=0;
+    const s=Math.floor(d/1000);
+    cdD.textContent=Math.floor(s/86400); cdH.textContent=pad(Math.floor(s%86400/3600));
+    cdM.textContent=pad(Math.floor(s%3600/60)); cdS.textContent=pad(s%60);
+  }
+  const cdD=document.getElementById('cd-d'),cdH=document.getElementById('cd-h'),
+        cdM=document.getElementById('cd-m'),cdS=document.getElementById('cd-s');
+  tick(); setInterval(tick,1000);
+})();
+
+/* ===== 3. objekt v hero: parallax na myš i scroll ===== */
+(function(){
+  const o=document.getElementById('heroObj'); if(!o) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let mx=0,my=0,sy=0,raf;
+  function apply(){
+    o.style.transform='translate3d('+(mx*-26).toFixed(2)+'px,'+(my*-20+sy*.16).toFixed(2)+'px,0) rotate('+(mx*5).toFixed(2)+'deg)';
+    raf=null;
+  }
+  function q(){ if(!raf) raf=requestAnimationFrame(apply); }
+  addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth)-.5;my=(e.clientY/innerHeight)-.5;q();},{passive:true});
+  addEventListener('scroll',()=>{sy=Math.min(scrollY,900);q();},{passive:true});
+  apply();
+})();
+
+/* ===== 4. barevný pás ===== */
+(function(){
+  const items=["Suverenita je, co chceme","Odolnost je, co musíme","Sdílený obraz situace",
+    "Čas rozhodnutí je teď","Kognitivní infrastruktura","Host Nation Support","Znalostní vrstva",
+    "19. 11. 2026 · CEVRO Praha"];
+  const h=items.map(t=>'<span>'+t+'</span>').join('');
+  document.getElementById('band').innerHTML=h+h;
+})();
+
+/* ===== 5. reveal + počítadla ===== */
+(function(){
+  observeReveal();
+  const cio=new IntersectionObserver(es=>es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    const el=e.target,to=+el.dataset.count,t0=performance.now(),dur=1100;
+    (function step(t){const p=Math.min((t-t0)/dur,1);
+      el.textContent=Math.round(to*(1-Math.pow(1-p,3)));
+      if(p<1)requestAnimationFrame(step);})(t0);
+    cio.unobserve(el);
+  }),{threshold:.5});
+  document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+})();
+
+/* ===== 6. pilíře ===== */
+(function(){
+  const btns=document.querySelectorAll('.pill-switch button'),panels=document.querySelectorAll('.pill-panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    panels.forEach(p=>p.classList.toggle('on',p.dataset.panel===b.dataset.pill));
+  }));
+})();
+
+/* ===== 7. provokativní otázky ===== */
+(function(){
+  const stage=document.getElementById('qstage'),dots=document.getElementById('qdots');
+  stage.innerHTML=QUESTIONS.map((q,i)=>'<div class="q-item'+(i===0?' on':'')+'"><p>'+esc(q)+'</p></div>').join('');
+  dots.innerHTML=QUESTIONS.map((q,i)=>'<button aria-label="Otázka '+(i+1)+'" class="'+(i===0?'on':'')+'"></button>').join('');
+  const items=stage.children,btns=dots.children;let i=0,timer;
+  function go(n){items[i].classList.remove('on');btns[i].classList.remove('on');
+    i=(n+QUESTIONS.length)%QUESTIONS.length;items[i].classList.add('on');btns[i].classList.add('on');}
+  function play(){timer=setInterval(()=>go(i+1),4600);}
+  [...btns].forEach((b,n)=>b.addEventListener('click',()=>{clearInterval(timer);go(n);play();}));
+  play();
+})();
+
+/* ===== 8. program ===== */
+(function(){
+  const body=document.getElementById('program-body'),filters=document.getElementById('filters');
+  function slotHTML(p,n){
+    const cl=col(p.th);
+    const talk=p.t?esc(p.t):'<span style="color:var(--on-paper3);font-weight:500">'+esc(p.tbd||'Téma příspěvku se dokončuje')+'</span>';
+    return '<div class="slot" data-th="'+p.th+'" data-id="'+p.id+'" style="--c:'+cl.c+';--on-c:'+cl.on+'">'+
+      '<div class="idx">'+String(n).padStart(2,'0')+'</div>'+
+      '<div class="tl"><h3>'+talk+'</h3>'+
+      '<div class="who"><b>'+esc(p.n)+'</b><span class="org">· '+esc(p.r)+'</span></div>'+
+      '<span class="tag">'+esc(THEMES[p.th]||'')+'</span></div>'+
+      '<div class="arrow">→</div></div>';
+  }
+  let n=0;
+  body.innerHTML=BLOCKS.map(bl=>{
+    const slots=PEOPLE.filter(p=>p.blk===bl.id).map(p=>slotHTML(p,++n)).join('');
+    const extra=bl.id==='panel'
+      ? '<div class="slot" data-th="all" data-id="bares" style="--c:#ffb020;--on-c:#08080b"><div class="idx">—</div><div class="tl">'+
+        '<h3>Panelová diskuse: kdo rozhoduje a kdo za to odpovídá</h3>'+
+        '<div class="who"><b>Jakub Bareš + Aleš Špidla</b><span class="org">· moderace, s AI spolumoderátorem a živou mapou debaty</span></div>'+
+        '<span class="tag">Napříč tématy</span></div><div class="arrow">→</div></div>' : '';
+    return '<div class="block rv" data-block="'+bl.id+'">'+
+      '<div class="block-head"><span class="bid">'+esc(bl.bid)+'</span><span class="bmeta">'+esc(bl.meta)+'</span>'+
+      '<p style="flex-basis:100%">'+esc(bl.d)+'</p></div>'+slots+extra+'</div>';
+  }).join('');
+  observeReveal(body);
+
+  const counts={};PEOPLE.forEach(p=>counts[p.th]=(counts[p.th]||0)+1);
+  const keys=Object.keys(THEMES).filter(k=>counts[k]);
+  filters.innerHTML='<button class="filt on" data-f="all">Vše <span class="c">'+PEOPLE.length+'</span></button>'+
+    keys.map(k=>'<button class="filt" data-f="'+k+'" style="border-color:'+col(k).c+'">'+esc(THEMES[k])+' <span class="c">'+counts[k]+'</span></button>').join('');
+  filters.addEventListener('click',e=>{
+    const b=e.target.closest('.filt');if(!b)return;
+    filters.querySelectorAll('.filt').forEach(x=>{x.classList.remove('on');x.style.background='';x.style.color=''});
+    b.classList.add('on');
+    if(b.dataset.f!=='all'){const c=col(b.dataset.f);b.style.background=c.c;b.style.color=c.on;}
+    const f=b.dataset.f;
+    document.querySelectorAll('#program-body .slot').forEach(s=>
+      s.classList.toggle('hide',f!=='all'&&s.dataset.th!==f&&s.dataset.th!=='all'));
+    document.querySelectorAll('#program-body .block').forEach(bl=>{
+      const vis=[...bl.querySelectorAll('.slot')].some(s=>!s.classList.contains('hide'));
+      bl.style.display=vis?'':'none'; if(vis)bl.classList.add('in');
+    });
+  });
+})();
+
+/* ===== 9. řečníci + legenda ===== */
+(function(){
+  const grid=document.getElementById('spk-grid');
+  grid.innerHTML=PEOPLE.map((p,i)=>{
+    const cl=col(p.th);
+    const talk=p.t?'<span class="tk">'+esc(p.t)+'</span>'
+                   :'<span class="tk tbd">'+esc(p.tbd||'Téma se dokončuje')+'</span>';
+    return '<button class="spk rv d'+(i%6)+'" data-id="'+p.id+'" style="--c:'+cl.c+';--on-c:'+cl.on+'">'+
+      '<span class="av">'+esc(p.ini)+'</span>'+
+      '<span class="nm">'+esc(p.n)+'</span>'+
+      '<span class="rl">'+esc(p.r)+'</span>'+talk+'</button>';
+  }).join('');
+  observeReveal(grid);
+  document.getElementById('legend').innerHTML=Object.keys(THEMES).map(k=>{
+    const c=col(k);return '<span style="background:'+c.c+';color:'+c.on+'">'+esc(THEMES[k])+'</span>';
+  }).join('');
+})();
+
+/* ===== 10. modal ===== */
+(function(){
+  const modal=document.getElementById('modal'),content=document.getElementById('modal-content'),
+        top=document.getElementById('modal-top'),card=document.getElementById('modal-card');
+  function open(id){
+    const p=PEOPLE.find(x=>x.id===id);if(!p)return;
+    const cl=col(p.th);
+    card.style.setProperty('--c',cl.c);card.style.setProperty('--on-c',cl.on);
+    top.style.background=cl.c;
+    const talk='<div class="mtalk"><div class="k">Příspěvek</div><p>'+
+      (p.t?esc(p.t):esc(p.tbd||'Téma se dokončuje'))+'</p></div>';
+    const bio=esc(p.b).split('\n\n').map(x=>'<p>'+x+'</p>').join('');
+    content.innerHTML='<h3>'+esc(p.n)+'</h3><div class="mrole">'+esc(p.r)+'</div>'+talk+
+      '<div class="mbio">'+bio+'</div>';
+    modal.classList.add('open');document.body.style.overflow='hidden';card.scrollTop=0;
+  }
+  function close(){modal.classList.remove('open');document.body.style.overflow='';}
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-id]');
+    if(t&&(t.classList.contains('spk')||t.classList.contains('slot')))open(t.dataset.id);
+  });
+  document.getElementById('modal-x').addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+</script>
+</body>
+</html>

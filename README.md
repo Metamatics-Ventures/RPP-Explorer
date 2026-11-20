@@ -98,3 +98,26 @@ Kód: viz `LICENSE` (TBD). Data RPP jsou open data DIA bez omezení autorských 
 ---
 
 *Repozitář: Metamatics-Ventures/RPP-Explorer. Vznikl jako výstup práce skupiny PS07 kGovernment, AFCEA ČR.*
+
+## Provoz / Operations
+
+- **Účet:** AWS 472542740583 (profil `startups`), region **eu-north-1**; certifikáty a CloudFront globálně.
+  Přesunuto z 944599182879 dne 2026-11-20. Resource group **`app-mapastatu`** (tag `app=mapastatu`).
+- **Infrastruktura:** Terraform v `infra/` (stav `s3://tfstate-472542740583/mapastatu/prod.tfstate`).
+  Jedna zóna `mapastatu.cz` a jeden statický web (S3 + CloudFront + regionální „front door“ API Gateway)
+  na každou subdoménu: `www` (mapastatu.cz, www), `digitalizace`, `dopady`, `kompetitivnost`,
+  `krizoverizeni` (+ krizovapripravenost), `krizovescenare`, `simulace`, `situace`, `zakony`.
+  `etalon.mapastatu.cz` patří aplikaci dia-etalon (zůstává v 944599182879), záznam je jen zkopírovaný.
+- **Backend „Zeptej se“ a zpětná vazba:** Lambda `mapastatu-prod-nl-query` (kód `backend/nl-query/`,
+  Node 22) za HTTP API (výstup `nlq_endpoint`, volá ho `app/features/feat_nlquery.js` a `feat_feedback.js`),
+  Claude Haiku 4.5 přes Bedrock (aplikační inferenční profil `mapastatu-prod-haiku`, EU), DynamoDB
+  `mapastatu-prod-feedback` (PITR zapnuté).
+- **Nasazení infrastruktury i backendu:** `cd infra && terraform plan && terraform apply`.
+- **Nasazení webu:** `./deploy.sh <site> <adresář|soubor> [prefix]`, např. `./deploy.sh www app`
+  (bucket a distribuce bere z `terraform output`; nic nemaže, protože bucket `www` drží víc projektů).
+  Dílčí skripty v kGovernment OneDrive (`intelligence-afcea-cz/.../deploy*.sh`, `Zakony/prototypes/temata/deploy.sh`)
+  čtou stejné výstupy z `~/NGO/RPP-Explorer/infra`.
+- **Limit front door:** 30 s na požadavek a 10 MB na odpověď; soubory nad 9,5 MB (`data/ovm.json`,
+  `data/ovm_agendy_plne.json`) jsou v S3 uložené gzipem (`Content-Encoding: gzip`), `deploy.sh` to dělá sám.
+- **DNS:** po přepnutí nameserverů u registrátora na novou zónu nastav v `infra/main.tf`
+  `legacy_zone_id = ""` a `terraform apply`.
